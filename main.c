@@ -9,6 +9,9 @@
 #include <main.h>
 #include <chprintf.h>
 
+#include <imu.h>
+#include <motors.h>
+
 static void serial_start(void)
 {
 	static SerialConfig ser_cfg = {
@@ -33,8 +36,12 @@ int main(void)
     //starts the USB communication
     usb_start();
 
+    imu_start();
+    calibrate_gyro();
+    motors_init();
+
     while(1){
-    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
+//    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
     }
 }
 
