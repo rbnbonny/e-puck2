@@ -22,17 +22,17 @@
 //uncomment to use double buffering to send the FFT to the computer
 //#define DOUBLE_BUFFERING
 //
-//static void serial_start(void)
-//{
-//	static SerialConfig ser_cfg = {
-//	    115200,
-//	    0,
-//	    0,
-//	    0,
-//	};
-//
-//	sdStart(&SD3, &ser_cfg); // UART3.
-//}
+static void serial_start(void)
+{
+	static SerialConfig ser_cfg = {
+	    115200,
+	    0,
+	    0,
+	    0,
+	};
+
+	sdStart(&SD3, &ser_cfg); // UART3.
+}
 //
 //static void timer12_start(void){
 //    //General Purpose Timer configuration
