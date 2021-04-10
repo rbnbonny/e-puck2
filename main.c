@@ -9,8 +9,10 @@
 #include <main.h>
 #include <chprintf.h>
 
-#include <imu.h>
+#include <sensors/imu.h>
 #include <motors.h>
+
+#define KP 1
 
 static void serial_start(void)
 {
@@ -42,15 +44,17 @@ int main(void)
 
     systime_t time1, time2;
     time2 = chVTGetSystemTime();
+    uint16_t err = 0;
 
 
     while(1){
     	time1 = chVTGetSystemTime();
 
+    	err += KP * get_gyro_filtered(X_AXIS,5) * (time1 - time2);
 
     	time2 = time1;
 
-//    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
+    	chprintf((BaseSequentialStream *)&SDU1, "GyroErr %d\r\n", err);
     }
 }
 
