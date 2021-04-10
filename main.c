@@ -12,7 +12,7 @@
 #include <sensors/imu.h>
 #include <motors.h>
 
-#define KP 1
+#define KP 0.001
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
@@ -44,22 +44,21 @@ int main(void)
     usb_start();
 
     imu_start();
-    calibrate_gyro();
     motors_init();
 
     systime_t time1, time2;
     time2 = chVTGetSystemTime();
-    uint16_t err = 0;
+    float err = 0;
 
 
     while(1){
     	time1 = chVTGetSystemTime();
 
-    	err = KP * get_gyro_filtered(X_AXIS,5) * (time1 - time2);
+    	err = KP * get_gyro_filtered(Z_AXIS,5);
 
     	time2 = time1;
 
-    	chprintf((BaseSequentialStream *)&SDU1, "GyroErr %d\r\n", err);
+    	chprintf((BaseSequentialStream *)&SDU1, "GyroErr %f\r\n", err);
     }
 }
 
