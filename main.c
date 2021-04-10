@@ -40,7 +40,16 @@ int main(void)
     calibrate_gyro();
     motors_init();
 
+    systime_t time1, time2;
+    time2 = chVTGetSystemTime();
+
+
     while(1){
+    	time1 = chVTGetSystemTime();
+
+
+    	time2 = time1;
+
 //    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
     }
 }
