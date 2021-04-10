@@ -14,6 +14,10 @@
 
 #define KP 1
 
+messagebus_t bus;
+MUTEX_DECL(bus_lock);
+CONDVAR_DECL(bus_condvar);
+
 static void serial_start(void)
 {
 	static SerialConfig ser_cfg = {
@@ -32,6 +36,7 @@ int main(void)
     halInit();
     chSysInit();
     mpu_init();
+    messagebus_init(&bus, &bus_lock, &bus_condvar);
 
     //starts the serial communication
     serial_start();
@@ -50,7 +55,7 @@ int main(void)
     while(1){
     	time1 = chVTGetSystemTime();
 
-    	err += KP * get_gyro_filtered(X_AXIS,5) * (time1 - time2);
+    	err = KP * get_gyro_filtered(X_AXIS,5) * (time1 - time2);
 
     	time2 = time1;
 
