@@ -7,7 +7,10 @@
 #include "memory_protection.h"
 #include <usbcfg.h>
 #include <main.h>
+#include <camera/po8030.h>
 #include <chprintf.h>
+
+#include <process_image.h>
 
 static void serial_start(void)
 {
@@ -32,6 +35,11 @@ int main(void)
     serial_start();
     //starts the USB communication
     usb_start();
+    //starts the camera
+    dcmi_start();
+	po8030_start();
+
+    process_image_start();
 
     while(1){
     	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
