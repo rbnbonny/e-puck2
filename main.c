@@ -9,39 +9,40 @@
 #include <main.h>
 #include <chprintf.h>
 
-static void serial_start(void)
-{
-	static SerialConfig ser_cfg = {
-	    115200,
-	    0,
-	    0,
-	    0,
-	};
+#include "obstacle_detection.h"
+
+messagebus_t bus;
+MUTEX_DECL(bus_lock);
+CONDVAR_DECL(bus_condvar);
+
+static void serial_start(void) {
+	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
 
 	sdStart(&SD3, &ser_cfg); // UART3.
 }
 
-int main(void)
-{
+int main(void) {
 
-    halInit();
-    chSysInit();
-    mpu_init();
+	halInit();
+	chSysInit();
+	//mpu_init();
 
-    //starts the serial communication
-    serial_start();
-    //starts the USB communication
-    usb_start();
+	//starts the serial communication
+	serial_start();
+	//starts the USB communication
+	usb_start();
 
-    while(1){
-    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
-    }
+	obstacle_detection_start();
+
+	while (1) {
+
+		chThdSleepMilliseconds(1000);
+	}
 }
 
 #define STACK_CHK_GUARD 0xe2dee396
 uintptr_t __stack_chk_guard = STACK_CHK_GUARD;
 
-void __stack_chk_fail(void)
-{
-    chSysHalt("Stack smashing detected");
+void __stack_chk_fail(void) {
+	chSysHalt("Stack smashing detected");
 }
