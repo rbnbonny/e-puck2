@@ -21,7 +21,6 @@ static void serial_start(void)
 	sdStart(&SD3, &ser_cfg); // UART3.
 }
 
-// Git Test
 int main(void)
 {
 
