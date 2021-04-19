@@ -2,6 +2,7 @@
 #include <hal.h>
 #include <chprintf.h>
 
+#include "msgbus/messagebus.h"
 #include "sensors/proximity.h"
 #include "sensors/VL53L0X/VL53L0X.h"
 
@@ -9,6 +10,10 @@
 
 static thread_t *TOFthd;
 static thread_t *IRthd;
+
+messagebus_t bus;
+MUTEX_DECL(bus_lock);
+CONDVAR_DECL(bus_condvar);
 
 static THD_FUNCTION(TOFsensor_thd, arg) {
 	(void) arg;
@@ -26,18 +31,26 @@ static THD_FUNCTION(IRsensor_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
-//	calibrate_ir();
-//	while (1) {
-//		volatile int testIR = get_calibrated_prox(IR_SENSORNUM);
-//		chprintf((BaseSequentialStream *) &SD3, "IR Level: %d \r\n", testIR);
-//		chThdSleepMilliseconds(100);
-//	}
+	messagebus_topic_t *proximity_topic = messagebus_find_topic_blocking(&bus,
+			"/proximity");
+	proximity_msg_t prox_values;
+
+	calibrate_ir();
+	while (1) {
+		messagebus_topic_wait(proximity_topic, &prox_values,
+				sizeof(prox_values));
+		volatile int testIR = get_calibrated_prox(IR_SENSORNUM);
+		chprintf((BaseSequentialStream *) &SD3, "IR Level: %d \r\n", testIR);
+		chThdSleepMilliseconds(100);
+	}
 }
 
 void obstacle_detection_start(void) {
 
-	proximity_start();
+	messagebus_init(&bus, &bus_lock, &bus_condvar);
+
 	VL53L0X_start();
+	proximity_start();
 
 	static THD_WORKING_AREA(TOFsensor_thd_wa, 1024);
 	TOFthd = chThdCreateStatic(TOFsensor_thd_wa, sizeof(TOFsensor_thd_wa),
