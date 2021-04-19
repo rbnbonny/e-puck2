@@ -13,17 +13,17 @@ static THD_FUNCTION(obstacle_detection_thd, arg) {
 
 	chThdSleepMilliseconds(100);
 
-//	while (1) {
-//		uint16_t testTOF = VL53L0X_get_dist_mm();
-//		chprintf((BaseSequentialStream *) &SD3,"TOF Distance: \f mm", testTOF);
-//		chThdSleepMilliseconds(100);
-//	}
+	while (1) {
+		volatile uint16_t testTOF = VL53L0X_get_dist_mm();
+		chprintf((BaseSequentialStream *) &SD3,"TOF Distance: %d mm \r\n", testTOF);
+		chThdSleepMilliseconds(100);
+	}
 }
 
 void obstacle_detection_start(void) {
 
 //	proximity_start();
-//	VL53L0X_start();
+	VL53L0X_start();
 
 	static THD_WORKING_AREA(obstacle_detection_thd_wa, 1024);
 	obstacleThd = chThdCreateStatic(obstacle_detection_thd_wa,
