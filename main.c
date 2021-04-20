@@ -6,10 +6,13 @@
 #include "hal.h"
 #include "memory_protection.h"
 #include <usbcfg.h>
-#include <main.h>
 #include <chprintf.h>
 
-#include "obstacle_detection.h"
+#include <main.h>
+#include <obstacle_detection.h>
+#include <motors.h>
+
+#define MOTORSPEED 200
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -21,7 +24,7 @@ int main(void) {
 
 	halInit();
 	chSysInit();
-	//mpu_init();
+	motors_init();
 
 	//starts the serial communication
 	serial_start();
@@ -29,6 +32,8 @@ int main(void) {
 	usb_start();
 
 	obstacle_detection_start();
+	left_motor_set_speed(MOTORSPEED);
+	right_motor_set_speed(MOTORSPEED);
 
 	while (1) {
 		/*
