@@ -8,13 +8,14 @@
 
 #define IR_SENSORNUM 0
 
-static thread_t *TOFthd;
-static thread_t *IRthd;
+//static thread_t *TOFthd;
+//static thread_t *IRthd;
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
+static THD_WORKING_AREA(TOFsensor_thd_wa, 1024);
 static THD_FUNCTION(TOFsensor_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
@@ -27,6 +28,7 @@ static THD_FUNCTION(TOFsensor_thd, arg) {
 	}
 }
 
+static THD_WORKING_AREA(IRsensor_thd_wa, 1024);
 static THD_FUNCTION(IRsensor_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
@@ -52,12 +54,10 @@ void obstacle_detection_start(void) {
 	VL53L0X_start();
 	proximity_start();
 
-	static THD_WORKING_AREA(TOFsensor_thd_wa, 1024);
-	TOFthd = chThdCreateStatic(TOFsensor_thd_wa, sizeof(TOFsensor_thd_wa),
+	chThdCreateStatic(TOFsensor_thd_wa, sizeof(TOFsensor_thd_wa),
 	NORMALPRIO, TOFsensor_thd, NULL);
 
-	static THD_WORKING_AREA(IRsensor_thd_wa, 1024);
-	IRthd = chThdCreateStatic(IRsensor_thd_wa, sizeof(IRsensor_thd_wa),
+	chThdCreateStatic(IRsensor_thd_wa, sizeof(IRsensor_thd_wa),
 	NORMALPRIO, IRsensor_thd, NULL);
 }
 
