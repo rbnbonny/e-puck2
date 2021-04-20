@@ -6,10 +6,10 @@ extern "C" {
 #endif
 
 // IR Sensor IDs
-#define IR_SENSORNUM_R 3
-#define IR_SENSORNUM_RF 2
-#define IR_SENSORNUM_L 6
-#define IR_SENSORNUM_LF 7
+#define IR_SENSORNUM_R 2
+#define IR_SENSORNUM_RF 1
+#define IR_SENSORNUM_L 5
+#define IR_SENSORNUM_LF 6
 
 // Struct containing proximity sensor date from TOF & IR
 typedef struct {
