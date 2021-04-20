@@ -2,6 +2,7 @@
 #include "hal.h"
 #include <chprintf.h>
 #include <usbcfg.h>
+#include <math.h>
 
 #include <main.h>
 #include <camera/po8030.h>
@@ -69,11 +70,83 @@ static THD_FUNCTION(ProcessImage, arg) {
 			image[i] = ((a & 0x07) << 3) | ((b & 0xE0 ) >> 5);
 		}
 
-		edge_detection(image);
+		//edge_detection(image);
+		binary_image(image);
 		SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
+
     }
 }
 
+void binary_image(uint8_t* image){
+
+	uint16_t mean = 0;
+	for(uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++){
+		mean += image[i];
+	}
+	mean = mean/IMAGE_BUFFER_SIZE;
+
+	static uint8_t image_prev[IMAGE_BUFFER_SIZE] = {0};
+	static uint8_t image_buf[IMAGE_BUFFER_SIZE] = {0};
+
+	for(uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++){
+		image_buf[i] = image[i];
+		image[i] = sqrt(image[i]*image[i] + image_prev[i]*image_prev[i]);
+		image_prev[i] = image_buf[i];
+	}
+
+	for(uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++){
+		if(image[i] < mean)
+			image[i] = 0;
+		else
+			image[i] = 1;
+	}
+
+	binary_correction(image);
+
+}
+
+void binary_correction(uint8_t* image){
+
+	uint16_t j = 0;
+
+	while(!image[j+1] || !image[j+2] || !image[j+3] ||!image[j+4] || !image[j+5]){
+		image[j] = 1;
+		j++;
+	}
+
+	j = 639;
+
+	while(!image[j-5] || !image[j-4] || !image[j-3] || !image[j-2] || !image[j-1]){
+		image[j] = 1;
+		j--;
+	}
+
+	for(uint16_t i = 1; i < IMAGE_BUFFER_SIZE-2; i++){
+		if(!image[i]){
+			if(image[i-1] && image[i+1])
+				image[i] = 1;
+			if(image[i-1] && !image[i+1]){
+				if(image[i+2])
+					image[i]=1;
+				else
+					image[i]=0;
+			}
+		}
+	}
+
+	for(uint16_t i = IMAGE_BUFFER_SIZE-2 ; i > 2; i--){
+		if(!image[i]){
+			if(image[i+1] && image[i-1])
+				image[i] = 1;
+			if(image[i+1] && !image[i-1]){
+				if(image[i-2])
+					image[i]=1;
+				else
+					image[i]=0;
+			}
+		}
+	}
+}
 
 
 void edge_detection(uint8_t *image){
