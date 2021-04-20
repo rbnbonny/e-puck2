@@ -21,6 +21,7 @@ typedef struct {
 } TOFIR_msg_t;
 
 void obstacle_detection_start(void);
+TOFIR_msg_t get_TOFIR_values(void);
 
 #ifdef __cplusplus
 }
