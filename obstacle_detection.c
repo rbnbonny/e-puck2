@@ -47,6 +47,14 @@ static THD_FUNCTION(IRsensor_thd, arg) {
 	}
 }
 
+static THD_WORKING_AREA(obstacle_detec_thd_wa, 2014);
+static THD_FUNCTION(obstacle_detec_thd, arg){
+	(void) arg;
+	chRegSetThreadName(__FUNCTION__);
+
+
+}
+
 void obstacle_detection_start(void) {
 
 	messagebus_init(&bus, &bus_lock, &bus_condvar);
@@ -59,5 +67,8 @@ void obstacle_detection_start(void) {
 
 	chThdCreateStatic(IRsensor_thd_wa, sizeof(IRsensor_thd_wa),
 	NORMALPRIO, IRsensor_thd, NULL);
+
+	chThdCreateStatic(obstacle_detec_thd_wa, sizeof(obstacle_detec_thd_wa),
+	NORMALPRIO, obstacle_detec_thd, NULL);
 }
 
