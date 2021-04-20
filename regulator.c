@@ -11,8 +11,8 @@
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
-static THD_WORKING_AREA(regulator_thd_wa, 1024);
-static THD_FUNCTION(regulator_thd, arg) {
+static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
+static THD_FUNCTION(lateral_regulator_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -45,7 +45,21 @@ static THD_FUNCTION(regulator_thd, arg) {
 
 }
 
+static THD_WORKING_AREA(frontal_regulator_thd_wa, 1024);
+static THD_FUNCTION(frontal_regulator_thd, arg) {
+	(void) arg;
+	chRegSetThreadName(__FUNCTION__);
+
+	while (1) {
+
+	}
+}
+
 void regulator_start(void) {
-	chThdCreateStatic(regulator_thd_wa, sizeof(regulator_thd_wa),
-	NORMALPRIO, regulator_thd, NULL);
+	chThdCreateStatic(lateral_regulator_thd_wa,
+			sizeof(lateral_regulator_thd_wa),
+			NORMALPRIO, lateral_regulator_thd, NULL);
+	chThdCreateStatic(frontal_regulator_thd_wa,
+			sizeof(frontal_regulator_thd_wa), NORMALPRIO, frontal_regulator_thd,
+			NULL);
 }
