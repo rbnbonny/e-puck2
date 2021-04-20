@@ -8,7 +8,8 @@
 #include <motors.h>
 
 #define KP 1
-#define DIFFSPEED 10
+#define DIFFSPEED 5
+#define THRESHOLD_ERR 80
 
 static THD_WORKING_AREA(regulator_thd_wa, 1024);
 static THD_FUNCTION(regulator_thd, arg) {
@@ -28,12 +29,14 @@ static THD_FUNCTION(regulator_thd, arg) {
 				/ 2;
 		err = rightIR - leftIR;
 
-		if (err < 0) {
-			right_motor_set_speed(KP * DIFFSPEED * err);
-			left_motor_set_speed(-KP * DIFFSPEED * err);
-		} else if (err > 0) {
-			right_motor_set_speed(-KP * DIFFSPEED * err);
-			left_motor_set_speed(KP * DIFFSPEED * err);
+		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+
+		if (err < -THRESHOLD_ERR) {
+			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
+			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
+		} else if (err > THRESHOLD_ERR) {
+			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
+			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
 		}
 
 		chThdSleepUntilWindowed(time, time + MS2ST(10));
