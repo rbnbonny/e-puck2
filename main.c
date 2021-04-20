@@ -13,8 +13,6 @@
 #include <regulator.h>
 #include <motors.h>
 
-#define MOTORSPEED 200
-
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
 
