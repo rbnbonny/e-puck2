@@ -31,7 +31,13 @@ int main(void) {
 	obstacle_detection_start();
 
 	while (1) {
-
+		/*
+		 * 1. Read out sensors
+		 * 2. Calculate action
+		 * 3. Actuate motors
+		 * 4. Calculate map
+		 * 5. Transmit map
+		 */
 		chThdSleepMilliseconds(1000);
 	}
 }
