@@ -10,6 +10,7 @@
 
 #include <main.h>
 #include <obstacle_detection.h>
+#include <regulator.h>
 #include <motors.h>
 
 #define MOTORSPEED 200
