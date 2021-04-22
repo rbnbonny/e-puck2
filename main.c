@@ -8,8 +8,10 @@
 #include <usbcfg.h>
 #include <main.h>
 #include <chprintf.h>
+#include <motors.h>
 
 #include "obstacle_detection.h"
+#include "motor_control.h"
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -22,6 +24,7 @@ int main(void) {
 	halInit();
 	chSysInit();
 	//mpu_init();
+	motors_init();
 
 	//starts the serial communication
 	serial_start();
@@ -38,6 +41,7 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
+		motor_turn_90(RIGHT);
 		chThdSleepMilliseconds(1000);
 	}
 }
