@@ -1,19 +1,17 @@
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "ch.h"
 #include "hal.h"
 #include "memory_protection.h"
 #include <usbcfg.h>
-#include <chprintf.h>
-
 #include <main.h>
-#include <obstacle_detection.h>
-#include <regulator.h>
-#include <process_image.h>
+#include <chprintf.h>
 #include <motors.h>
 
+#include "obstacle_detection.h"
+#include "motor_control.h"
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -25,6 +23,7 @@ int main(void) {
 
 	halInit();
 	chSysInit();
+	//mpu_init();
 	motors_init();
 
 	//starts the serial communication
@@ -32,9 +31,8 @@ int main(void) {
 	//starts the USB communication
 	usb_start();
 
-	obstacle_detection_start();
-	left_motor_set_speed(MOTORSPEED);
-	right_motor_set_speed(MOTORSPEED);
+	//obstacle_detection_start();
+
 
 	while (1) {
 		/*
@@ -44,7 +42,11 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-		chThdSleepMilliseconds(1000);
+		motor_turn(RIGHT,90);
+		chThdSleepMilliseconds(500);
+		motor_turn(LEFT, 45);
+
+
 	}
 }
 
