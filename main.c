@@ -49,7 +49,8 @@ int main(void)
     process_image_start();
 
     while(1){
-    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
+//    	chprintf((BaseSequentialStream *)&SDU1, "Test\r\n");
+    	chThdSleepSeconds(1);
     }
 }
 

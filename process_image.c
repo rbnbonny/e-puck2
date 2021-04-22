@@ -53,6 +53,7 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 	uint8_t *img_buff_ptr;
 	uint8_t image[IMAGE_BUFFER_SIZE] = {0};
+	uint8_t barcode_number = 0;
 
     while(1){
     	//waits until an image has been captured
@@ -71,8 +72,9 @@ static THD_FUNCTION(ProcessImage, arg) {
 		}
 
 		binary_image(image);
-		edge_detection(image);
-		SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
+		barcode_number = edge_detection(image);
+		chprintf((BaseSequentialStream *)&SDU1, "barcode = %d\r\n", barcode_number);
+		//SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
 
     }
 }
@@ -148,7 +150,7 @@ void binary_correction(uint8_t* image){
 
 uint8_t edge_detection(uint8_t *image){
 	uint16_t edge_array[14] = {0};
-	uint16_t line_width[7] = {0};
+	int16_t line_width[7] = {0};
 	uint8_t b = 0;
 	uint8_t a = 0;
 	for(uint16_t i = 5; i < IMAGE_BUFFER_SIZE-5; i++){
@@ -166,22 +168,32 @@ uint8_t edge_detection(uint8_t *image){
 	for(a = 0; a < 7; a++){
 		line_width[a] = edge_array[2*a+1] - edge_array[2*a];
 		if(line_width[a] <= 0)
-			return 0;
+			return b = 0;;
 	}
 
-	for(a = 1; a < 5; a++){
-		if(0.75*line_width[0] < line_width[a] && line_width[a] < 1.25*line_width[0])
+	for(a = 1; a< 5; a++){
+		if(line_width[a] > (line_width[0]+line_width[5])/2)
 			line_width[a] = 1;
-		if(0.25*line_width[5] < line_width[a] && line_width[a] <= 0.75*line_width[5])
+		else
 			line_width[a] = 0;
-		if(line_width[a] != 0 || line_width[a] != 1)
-			return 0;
-		}
+	}
+
+//	for(a = 1; a < 5; a++){
+//		if(0.75*line_width[0] < line_width[a] && line_width[a] < 1.25*line_width[0])
+//			line_width[a] = 1;
+//		if(0.5*line_width[5] < line_width[a] && line_width[a] <= 2*line_width[5])
+//			line_width[a] = 0;
+//		if(line_width[a] != 0 || line_width[a] != 1)
+//			b=0;
+//		}
+//	for(a = 1; a < 5; a++){
+//		chprintf((BaseSequentialStream *)&SDU1, "%d = %d\r\n", a, line_width[a]);
+//		chThdSleepMilliseconds(500);
+//	}
 
 	b = line_width[1] * 8 + line_width[2] * 4 + line_width[3] * 2 + line_width[4];
 	return b;
 }
-
 
 float get_distance_cm(void){
 	return distance_cm;
