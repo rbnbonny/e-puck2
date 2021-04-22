@@ -17,7 +17,7 @@
 #define RAND_THRESHOLD 100
 
 #define LATERAL_REGULATOR_PERIOD 10
-#define FRONTAL_REGULATOR_PERIOD 10
+#define FRONTAL_REGULATOR_PERIOD 200
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -37,7 +37,7 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 		err = rightIR - leftIR;
 
-		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+//		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
 
 		if (err < -THRESHOLD_ERR) {
 			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
@@ -60,6 +60,8 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
+		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
+				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
 			srand(time);
 			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
@@ -75,10 +77,13 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	}
 }
 
-void regulator_start(void) {
+void lateral_regulator_start(void) {
 	chThdCreateStatic(lateral_regulator_thd_wa,
 			sizeof(lateral_regulator_thd_wa),
 			NORMALPRIO, lateral_regulator_thd, NULL);
+}
+
+void frontal_regulator_start(void) {
 	chThdCreateStatic(frontal_regulator_thd_wa,
 			sizeof(frontal_regulator_thd_wa), NORMALPRIO, frontal_regulator_thd,
 			NULL);

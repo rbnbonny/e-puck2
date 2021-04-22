@@ -31,7 +31,7 @@ int main(void) {
 	usb_start();
 
 	obstacle_detection_start();
-	regulator_start();
+	frontal_regulator_start();
 
 	while (1) {
 		/*
@@ -41,8 +41,8 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-		left_motor_set_speed(MOTORSPEED);
-		right_motor_set_speed(MOTORSPEED);
+//		left_motor_set_speed(MOTORSPEED);
+//		right_motor_set_speed(MOTORSPEED);
 		chThdSleepMilliseconds(100);
 	}
 }

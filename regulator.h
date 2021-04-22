@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-void regulator_start(void);
+void lateral_regulator_start(void);
+void frontal_regulator_start(void);
 
 #ifdef __cplusplus
 }
