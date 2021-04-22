@@ -1,5 +1,6 @@
 #include <ch.h>
 #include <hal.h>
+#include <stdlib.h>
 #include <chprintf.h>
 
 #include <regulator.h>
@@ -10,6 +11,13 @@
 #define KP 1
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
+
+#define FRONT_THRESHOLD 40
+
+#define RAND_THRESHOLD 100
+
+#define LATERAL_REGULATOR_PERIOD 10
+#define FRONTAL_REGULATOR_PERIOD 10
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -39,10 +47,8 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
 		}
 
-		chThdSleepUntilWindowed(time, time + MS2ST(10));
-
+		chThdSleepUntilWindowed(time, time + MS2ST(LATERAL_REGULATOR_PERIOD));
 	}
-
 }
 
 static THD_WORKING_AREA(frontal_regulator_thd_wa, 1024);
@@ -50,8 +56,22 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
-	while (1) {
+	systime_t time;
 
+	while (1) {
+		time = chVTGetSystemTime();
+		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
+			srand(time);
+			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
+				palClearPad(GPIOD, GPIOD_LED3);
+			} else {
+				palClearPad(GPIOD, GPIOD_LED7);
+			}
+		}
+		chThdSleepMilliseconds(100);
+		palSetPad(GPIOD, GPIOD_LED3);
+		palSetPad(GPIOD, GPIOD_LED7);
+		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }
 
