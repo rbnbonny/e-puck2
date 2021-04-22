@@ -44,6 +44,9 @@ int main(void) {
 		 */
 		motor_turn(RIGHT,90);
 		chThdSleepMilliseconds(500);
+		motor_turn(LEFT, 45);
+
+
 	}
 }
 

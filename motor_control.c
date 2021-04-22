@@ -17,8 +17,11 @@ uint16_t motor_turn_step(uint16_t angle) {
 	float relative_turn = 0;
 	uint16_t wheel_steps = 0;
 
-	relative_turn = angle / 360;
-	return wheel_steps = PUCK_D * relative_turn * WHEEL_STEP / WHEEL_D;
+	relative_turn = angle * WHEEL_STEP / 360;
+
+	wheel_steps = PUCK_D * (uint16_t) relative_turn / WHEEL_D;
+
+	return wheel_steps;
 }
 
 void motor_turn(direction dir, uint16_t angle) {
@@ -30,25 +33,17 @@ void motor_turn(direction dir, uint16_t angle) {
 	pos_left = left_motor_get_pos();
 
 	wheel_steps = motor_turn_step(angle);
-	chprintf((BaseSequentialStream*)&SD3, "wheel = %d\r\n", wheel_steps);
-
-
 
 	if (dir == LEFT) {
 		right_motor_set_speed(MOTOR_SPEED);
 		left_motor_set_speed(-MOTOR_SPEED);
-	}
-	if (dir == RIGHT) {
+	} else if (dir == RIGHT) {
 		right_motor_set_speed(-MOTOR_SPEED);
 		left_motor_set_speed(MOTOR_SPEED);
-	} else {
-		right_motor_set_speed(MOTOR_SPEED);
-		left_motor_set_speed(MOTOR_SPEED);
 	}
 
-
 	while (1) {
-		chprintf((BaseSequentialStream*)&SD3, "pos_diff = %d\r\n", right_motor_get_pos()-pos_right);
+		//chprintf((BaseSequentialStream*)&SD3, "pos_diff = %d\r\n", right_motor_get_pos()-pos_right);
 		if (right_motor_get_pos() - pos_right > wheel_steps) {
 			right_motor_set_speed(0);
 			left_motor_set_speed(0);

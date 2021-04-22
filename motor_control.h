@@ -1,6 +1,6 @@
 #ifndef MOTOR_CONTROL_H_
 #define MOTOR_CONTROL_H_
-#define MOTOR_SPEED 50
+#define MOTOR_SPEED 200
 
 #ifdef __cplusplus
 extern "C" {
