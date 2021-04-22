@@ -6,7 +6,7 @@
 #include <regulator.h>
 #include <main.h>
 #include <obstacle_detection.h>
-#include <motors.h>
+#include <motor_control.h>
 
 #define KP 1
 #define DIFFSPEED 5
@@ -66,13 +66,16 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 			srand(time);
 			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
 				palClearPad(GPIOD, GPIOD_LED3);
+				motor_turn(RIGHT, 90);
+				palSetPad(GPIOD, GPIOD_LED3);
 			} else {
 				palClearPad(GPIOD, GPIOD_LED7);
+				motor_turn(LEFT, 90);
+				palSetPad(GPIOD, GPIOD_LED7);
 			}
 		}
 		chThdSleepMilliseconds(100);
-		palSetPad(GPIOD, GPIOD_LED3);
-		palSetPad(GPIOD, GPIOD_LED7);
+
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }
