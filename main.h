@@ -5,8 +5,6 @@
 extern "C" {
 #endif
 
-#define MOTORSPEED 400
-
 #include "camera/dcmi_camera.h"
 #include "msgbus/messagebus.h"
 #include "parameter/parameter.h"
