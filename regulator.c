@@ -7,6 +7,7 @@
 #include <main.h>
 #include <obstacle_detection.h>
 #include <motor_control.h>
+#include <motors.h>
 
 #define KP 1
 #define DIFFSPEED 5
@@ -74,8 +75,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 				palSetPad(GPIOD, GPIOD_LED7);
 			}
 		}
-		chThdSleepMilliseconds(100);
-
+		motor_straight();
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }

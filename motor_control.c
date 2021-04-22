@@ -57,3 +57,8 @@ void motor_turn(direction dir, uint16_t angle) {
 	}
 }
 
+void motor_straight(void){
+	left_motor_set_speed(MOTORSPEED);
+	right_motor_set_speed(MOTORSPEED);
+}
+
