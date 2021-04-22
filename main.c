@@ -31,7 +31,8 @@ int main(void) {
 	//starts the USB communication
 	usb_start();
 
-	obstacle_detection_start();
+	//obstacle_detection_start();
+
 
 	while (1) {
 		/*
@@ -41,8 +42,8 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-		motor_turn_90(RIGHT);
-		chThdSleepMilliseconds(1000);
+		motor_turn(RIGHT,90);
+		chThdSleepMilliseconds(500);
 	}
 }
 

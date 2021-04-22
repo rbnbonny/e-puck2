@@ -1,5 +1,6 @@
 #ifndef MOTOR_CONTROL_H_
 #define MOTOR_CONTROL_H_
+#define MOTOR_SPEED 50
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,7 +10,7 @@ typedef enum {
 	LEFT = 0, RIGHT,
 } direction;
 
-void motor_turn_90(direction);
+void motor_turn(direction, uint16_t);
 
 #ifdef __cplusplus
 }
