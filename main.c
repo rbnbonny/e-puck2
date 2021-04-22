@@ -8,7 +8,6 @@
 #include <usbcfg.h>
 #include <main.h>
 #include <chprintf.h>
-#include <motors.h>
 
 #include "obstacle_detection.h"
 #include "motor_control.h"
@@ -31,8 +30,10 @@ int main(void) {
 	//starts the USB communication
 	usb_start();
 
+	motor_straight();
 	obstacle_detection_start();
 	frontal_regulator_start();
+	lateral_regulator_start();
 
 
 	while (1) {
