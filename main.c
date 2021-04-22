@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
 
 #include "ch.h"
 #include "hal.h"
@@ -10,9 +10,10 @@
 
 #include <main.h>
 #include <obstacle_detection.h>
+#include <regulator.h>
+#include <process_image.h>
 #include <motors.h>
 
-#define MOTORSPEED 200
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };

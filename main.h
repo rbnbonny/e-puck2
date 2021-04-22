@@ -9,6 +9,9 @@ extern "C" {
 #include "msgbus/messagebus.h"
 #include "parameter/parameter.h"
 
+#define MOTORSPEED 300
+#define IMAGE_BUFFER_SIZE 640
+
 /** Robot wide IPC bus. */
 extern messagebus_t bus;
 
