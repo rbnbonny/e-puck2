@@ -9,10 +9,9 @@
 
 #include <process_image.h>
 
-static float distance_cm = 0;
-
-//semaphore
 static BSEMAPHORE_DECL(image_ready_sem, TRUE);
+
+uint8_t barcode_number = 0;
 
 static THD_WORKING_AREA(waCaptureImage, 256);
 static THD_FUNCTION(CaptureImage, arg) {
@@ -47,7 +46,6 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 	uint8_t *img_buff_ptr;
 	uint8_t image[IMAGE_BUFFER_SIZE] = { 0 };
-	uint8_t barcode_number = 0;
 
 	while (1) {
 		//waits until an image has been captured
@@ -67,8 +65,8 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 		binary_image(image);
 		barcode_number = edge_detection(image);
-		chprintf((BaseSequentialStream *) &SDU1, "barcode = %d\r\n",
-				barcode_number);
+//		chprintf((BaseSequentialStream *) &SDU1, "barcode = %d\r\n",
+//				barcode_number);
 		//SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
 
 	}
@@ -194,13 +192,13 @@ uint8_t edge_detection(uint8_t *image) {
 	return b;
 }
 
-float get_distance_cm(void) {
-	return distance_cm;
-}
-
 void process_image_start(void) {
 	chThdCreateStatic(waProcessImage, sizeof(waProcessImage), NORMALPRIO,
 			ProcessImage, NULL);
 	chThdCreateStatic(waCaptureImage, sizeof(waCaptureImage), NORMALPRIO,
 			CaptureImage, NULL);
+}
+
+uint8_t get_barcode_number(void){
+	return barcode_number;
 }
