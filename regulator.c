@@ -11,14 +11,14 @@
 
 static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
 
-#define KP 1/10
+#define KP 1/30
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
 #define FRONT_THRESHOLD (CELLSIZE - PUCK_D)/2
 #define RAND_THRESHOLD 100
 
-#define LATERAL_REGULATOR_PERIOD 50
+#define LATERAL_REGULATOR_PERIOD 10
 #define FRONTAL_REGULATOR_PERIOD 200
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
@@ -39,9 +39,9 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 		err = rightIR - leftIR;
 
-		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
-		chprintf((BaseSequentialStream *) &SD3, "Contr: %d \r\n",
-				MOTORSPEED + KP * DIFFSPEED * err);
+//		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+//		chprintf((BaseSequentialStream *) &SD3, "Contr: %d \r\n",
+//				MOTORSPEED + KP * DIFFSPEED * err);
 
 		if (err < -THRESHOLD_ERR) {
 			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
@@ -68,7 +68,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
 //				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
-			chprintf((BaseSequentialStream *) &SD3, "SP Set \r\n");
+//			chprintf((BaseSequentialStream *) &SD3, "SP Set \r\n");
 			chBSemSignal(&frontObstacle_sem);
 		}
 
