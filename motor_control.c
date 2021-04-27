@@ -12,6 +12,8 @@
 #define WHEEL_D 41 //mm
 #define WHEEL_STEP 1000 //number of steps per rotation
 
+static uint8_t dir_flag;
+
 uint16_t motor_turn_step(uint16_t angle) {
 
 	float relative_turn = 0;
@@ -33,6 +35,8 @@ void motor_turn(direction dir, uint16_t angle) {
 	pos_left = left_motor_get_pos();
 
 	wheel_steps = motor_turn_step(angle);
+
+	dir_flag = dir;
 
 	if (dir == LEFT) {
 		right_motor_set_speed(MOTOR_SPEED);
@@ -60,5 +64,11 @@ void motor_turn(direction dir, uint16_t angle) {
 void motor_straight(void){
 	left_motor_set_speed(MOTORSPEED);
 	right_motor_set_speed(MOTORSPEED);
+}
+
+uint8_t get_dir_flag(void){
+	uint8_t flag = dir_flag;
+	dir_flag = 5; //something which we cannot use;
+	return flag;
 }
 
