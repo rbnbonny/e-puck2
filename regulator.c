@@ -11,14 +11,14 @@
 
 static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
 
-#define KP 1
+#define KP 1/10
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
 #define FRONT_THRESHOLD (CELLSIZE - PUCK_D)/2
 #define RAND_THRESHOLD 100
 
-#define LATERAL_REGULATOR_PERIOD 10
+#define LATERAL_REGULATOR_PERIOD 50
 #define FRONTAL_REGULATOR_PERIOD 200
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
@@ -39,14 +39,16 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 		err = rightIR - leftIR;
 
-//		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+		chprintf((BaseSequentialStream *) &SD3, "Contr: %d \r\n",
+				MOTORSPEED + KP * DIFFSPEED * err);
 
 		if (err < -THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
-			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
 		} else if (err > THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
-			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
 		}
 
 		chThdSleepUntilWindowed(time, time + MS2ST(LATERAL_REGULATOR_PERIOD));
@@ -97,6 +99,6 @@ void frontal_regulator_start(void) {
 			NULL);
 }
 
-void frontal_obstacle_wait(void){
+void frontal_obstacle_wait(void) {
 	chBSemWait(&frontObstacle_sem);
 }
