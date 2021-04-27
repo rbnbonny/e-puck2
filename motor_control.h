@@ -12,6 +12,7 @@ typedef enum {
 
 void motor_turn(direction, uint16_t);
 void motor_straight(void);
+void turn_wait(void);
 
 #ifdef __cplusplus
 }

@@ -79,12 +79,13 @@ int main(void) {
 //		if (get_TOFIR_values().IR_l_prox < IR_THRESHOLD) {
 //		chSysLock();
 //		chSysUnlock();
-		motor_turn(LEFT, 90);
+//		motor_turn(LEFT, 90);
 //		}
 //		if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD) {
-//			motor_turn(RIGHT, 90);
+		motor_turn(RIGHT, 90);
+		turn_wait();
 //		}
-		chThdSleepMilliseconds(1000);
+//		chThdSleepMilliseconds(1000);
 
 	}
 }
