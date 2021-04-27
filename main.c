@@ -7,10 +7,12 @@
 #include "memory_protection.h"
 #include <usbcfg.h>
 #include <main.h>
+#include <motors.h>
 #include <chprintf.h>
 
 #include "obstacle_detection.h"
 #include "motor_control.h"
+#include "regulator.h"
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -35,7 +37,6 @@ int main(void) {
 	frontal_regulator_start();
 	lateral_regulator_start();
 
-
 	while (1) {
 		/*
 		 * 1. Read out sensors
@@ -44,8 +45,12 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-		chThdSleepMilliseconds(500);
-
+		chprintf((BaseSequentialStream *) &SD3, "Waiting\r\n");
+		frontal_obstacle_wait();
+		chprintf((BaseSequentialStream *) &SD3, "SP Reset\r\n");
+		palClearPad(GPIOD, GPIOD_LED5);
+		chThdSleepMilliseconds(100);
+		palSetPad(GPIOD, GPIOD_LED5);
 
 	}
 }

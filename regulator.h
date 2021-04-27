@@ -7,6 +7,7 @@ extern "C" {
 
 void lateral_regulator_start(void);
 void frontal_regulator_start(void);
+void frontal_obstacle_wait(void);
 
 #ifdef __cplusplus
 }

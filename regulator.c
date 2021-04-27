@@ -9,6 +9,8 @@
 #include <motor_control.h>
 #include <motors.h>
 
+static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
+
 #define KP 1
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
@@ -60,20 +62,24 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
+		srand(time);
 //		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
 //				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
-			srand(time);
-			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
-				palClearPad(GPIOD, GPIOD_LED3);
-				motor_turn(RIGHT, 90);
-				palSetPad(GPIOD, GPIOD_LED3);
-			} else {
-				palClearPad(GPIOD, GPIOD_LED7);
-				motor_turn(LEFT, 90);
-				palSetPad(GPIOD, GPIOD_LED7);
-			}
+			chprintf((BaseSequentialStream *) &SD3, "SP Set \r\n");
+			chBSemSignal(&frontObstacle_sem);
 		}
+
+//			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
+//				palClearPad(GPIOD, GPIOD_LED3);
+//				motor_turn(RIGHT, 90);
+//				palSetPad(GPIOD, GPIOD_LED3);
+//			} else {
+//				palClearPad(GPIOD, GPIOD_LED7);
+//				motor_turn(LEFT, 90);
+//				palSetPad(GPIOD, GPIOD_LED7);
+//			}
+//		}
 		motor_straight();
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
@@ -89,4 +95,8 @@ void frontal_regulator_start(void) {
 	chThdCreateStatic(frontal_regulator_thd_wa,
 			sizeof(frontal_regulator_thd_wa), NORMALPRIO, frontal_regulator_thd,
 			NULL);
+}
+
+void frontal_obstacle_wait(void){
+	chBSemWait(&frontObstacle_sem);
 }
