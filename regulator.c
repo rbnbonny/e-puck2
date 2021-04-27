@@ -64,7 +64,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
-		srand(time);
+//		srand(time);
 //		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
 //				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
@@ -82,7 +82,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //				palSetPad(GPIOD, GPIOD_LED7);
 //			}
 //		}
-		motor_straight();
+//		motor_straight();
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }
