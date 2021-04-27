@@ -13,8 +13,7 @@
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
-#define FRONT_THRESHOLD 40
-
+#define FRONT_THRESHOLD (CELLSIZE - PUCK_D)/2
 #define RAND_THRESHOLD 100
 
 #define LATERAL_REGULATOR_PERIOD 10
@@ -32,9 +31,9 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
-		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_rf_prox)
+		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_r_prox)
 				/ 2;
-		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_lf_prox)
+		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_l_prox)
 				/ 2;
 		err = rightIR - leftIR;
 
@@ -61,8 +60,8 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
-		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
-				get_TOFIR_values().TOF_dist);
+//		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
+//				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
 			srand(time);
 			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {

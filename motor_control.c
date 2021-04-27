@@ -8,7 +8,6 @@
 #include <motor_control.h>
 #include <motors.h>
 
-#define PUCK_D 53 //mm
 #define WHEEL_D 41 //mm
 #define WHEEL_STEP 1000 //number of steps per rotation
 
