@@ -36,11 +36,11 @@ void motor_turn(direction dir, uint16_t angle) {
 	wheel_steps = motor_turn_step(angle);
 
 	if (dir == LEFT) {
-		right_motor_set_speed(MOTOR_SPEED);
-		left_motor_set_speed(-MOTOR_SPEED);
+		right_motor_set_speed(ROTSPEED);
+		left_motor_set_speed(-ROTSPEED);
 	} else if (dir == RIGHT) {
-		right_motor_set_speed(-MOTOR_SPEED);
-		left_motor_set_speed(MOTOR_SPEED);
+		right_motor_set_speed(-ROTSPEED);
+		left_motor_set_speed(ROTSPEED);
 	}
 
 	while (1) {
