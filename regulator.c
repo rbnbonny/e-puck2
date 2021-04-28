@@ -10,14 +10,14 @@
 
 static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
 
-#define KP 1/30
+#define KP 0.05
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
-#define FRONT_THRESHOLD 40
+#define FRONT_THRESHOLD 45
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD 500
+#define IR_THRESHOLD 20
 
 #define LATERAL_REGULATOR_PERIOD 10
 #define FRONTAL_REGULATOR_PERIOD 50
@@ -34,11 +34,14 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 
 	while (1) {
 		time = chVTGetSystemTime();
-		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_r_prox)
+		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_rf_prox)
 				/ 2;
-		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_l_prox)
+		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_lf_prox)
 				/ 2;
 		err = rightIR - leftIR;
+//		if (rightIR < IR_THRESHOLD || leftIR < IR_THRESHOLD) {
+//			err = 0;
+//		}
 
 //		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
 //		chprintf((BaseSequentialStream *) &SD3, "Contr: %d \r\n",
@@ -73,7 +76,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //			chBSemSignal(&frontObstacle_sem);
 //			motor_turn(determine90(),90);
 			chprintf((BaseSequentialStream *) &SD3, "Initiating turn \r\n");
-			motor_turn(LEFT,90);
+			motor_turn(determine90(), 90);
 			chprintf((BaseSequentialStream *) &SD3, "Ending turn \r\n");
 			motor_straight();
 		}
@@ -109,14 +112,15 @@ direction determine90(void) {
 	direction dir;
 	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
 			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
-	if (get_TOFIR_values().IR_l_prox < IR_THRESHOLD) {
+	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD) {
 		dir = LEFT;
-	} else if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD) {
+	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD) {
 		dir = RIGHT;
 	} else {
 		systime_t time = chVTGetSystemTime();
 		srand(time);
-		(rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) ? (dir = LEFT) : (dir = RIGHT);
+		(rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) ? (dir = LEFT) : (dir =
+																	RIGHT);
 	}
 	return dir;
 }
