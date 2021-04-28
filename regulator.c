@@ -10,9 +10,9 @@
 
 #define KP 0.05
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 80
+#define THRESHOLD_ERR 50
 
-#define FRONT_THRESHOLD 45
+#define FRONT_THRESHOLD 55
 #define RAND_THRESHOLD 100
 
 #define IR_THRESHOLD 20

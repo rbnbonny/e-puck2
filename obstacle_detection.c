@@ -9,7 +9,7 @@
 
 //#define PRINT_VALUES
 
-#define TOF_SAMPLING_WAIT 100
+#define TOF_SAMPLING_WAIT 10
 //#define IR_SAMPLING_WAIT 100
 
 TOFIR_msg_t TOFIR_values;
