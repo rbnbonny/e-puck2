@@ -6,6 +6,7 @@
 #include <regulator.h>
 #include <main.h>
 #include <obstacle_detection.h>
+#include <blinker.h>
 #include <motors.h>
 
 #define KP 0.05
@@ -59,10 +60,14 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	systime_t time;
+	direction dir;
+
 	while (1) {
 		time = chVTGetSystemTime();
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
-			motor_turn(determine90(), 90);
+			dir = determine90();
+			call_blinker(dir);
+			motor_turn(dir, 90);
 			motor_straight();
 		}
 
@@ -87,6 +92,7 @@ void lateral_regulator_start(void) {
 }
 
 void frontal_regulator_start(void) {
+	blinker_start();
 	chThdCreateStatic(frontal_regulator_thd_wa,
 			sizeof(frontal_regulator_thd_wa),
 			NORMALPRIO, frontal_regulator_thd, NULL);
@@ -108,3 +114,4 @@ direction determine90(void) {
 	}
 	return dir;
 }
+
