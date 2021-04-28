@@ -25,7 +25,6 @@ int main(void) {
 
 	halInit();
 	chSysInit();
-	//mpu_init();
 	motors_init();
 
 	//starts the serial communication
@@ -36,7 +35,7 @@ int main(void) {
 	motor_straight();
 	obstacle_detection_start();
 	frontal_regulator_start();
-//	lateral_regulator_start();
+	lateral_regulator_start();
 	motor_straight();
 
 	while (1) {
@@ -47,50 +46,8 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-//		frontal_obstacle_wait();
-//		switch (get_barcode_number()) {
-//			case 0:
-//				break;
-//			case 1:
-//				break;
-//			case 2:
-//				break;
-//			case 3:
-//				break;
-//			case 4:
-//				break;
-//			case 5:
-//				break;
-//			case 6:
-//				break;
-//			case 7:
-//				break;
-//			case 8:
-//				break;
-//			case 9:
-//				break;
-//			default:
-//				break;
-//		}
-//		chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d",
-//				get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
 
-//		if (get_TOFIR_values().IR_l_prox < IR_THRESHOLD) {
-//		chSysLock();
-//		chSysUnlock();
-//		motor_turn(LEFT, 90);
-//		}
-//		if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD) {
-//		frontal_obstacle_wait();
-//		motor_turn(RIGHT, 90);
-//		turn_wait();
-//		}
-		chThdSleepMilliseconds(3000);
-
-		/*
-		 * Wrap motor control into thread and call wait function using internal semaphore
-		 */
-
+		chThdSleepMilliseconds(100);
 	}
 }
 

@@ -1,6 +1,5 @@
 #ifndef MOTOR_CONTROL_H_
 #define MOTOR_CONTROL_H_
-//#define MOTOR_SPEED 200
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,7 +11,6 @@ typedef enum {
 
 void motor_turn(direction, uint16_t);
 void motor_straight(void);
-//void turn_wait(void);
 
 #ifdef __cplusplus
 }

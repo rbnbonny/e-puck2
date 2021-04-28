@@ -8,8 +8,6 @@
 #include <obstacle_detection.h>
 #include <motors.h>
 
-static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
-
 #define KP 0.05
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
@@ -43,10 +41,6 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 //			err = 0;
 //		}
 
-//		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
-//		chprintf((BaseSequentialStream *) &SD3, "Contr: %d \r\n",
-//				MOTORSPEED + KP * DIFFSPEED * err);
-
 		if (err < -THRESHOLD_ERR) {
 			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
 			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
@@ -65,19 +59,10 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	systime_t time;
-
 	while (1) {
 		time = chVTGetSystemTime();
-//		srand(time);
-//		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
-//				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
-//			chprintf((BaseSequentialStream *) &SD3, "SP Set \r\n");
-//			chBSemSignal(&frontObstacle_sem);
-//			motor_turn(determine90(),90);
-			chprintf((BaseSequentialStream *) &SD3, "Initiating turn \r\n");
 			motor_turn(determine90(), 90);
-			chprintf((BaseSequentialStream *) &SD3, "Ending turn \r\n");
 			motor_straight();
 		}
 
@@ -91,7 +76,6 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //				palSetPad(GPIOD, GPIOD_LED7);
 //			}
 //		}
-//		motor_straight();
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }
@@ -124,7 +108,3 @@ direction determine90(void) {
 	}
 	return dir;
 }
-
-//void frontal_obstacle_wait(void) {
-//	chBSemWait(&frontObstacle_sem);
-//}
