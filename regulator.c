@@ -96,13 +96,13 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 void lateral_regulator_start(void) {
 	chThdCreateStatic(lateral_regulator_thd_wa,
 			sizeof(lateral_regulator_thd_wa),
-			NORMALPRIO-1, lateral_regulator_thd, NULL);
+			NORMALPRIO - 1, lateral_regulator_thd, NULL);
 }
 
 void frontal_regulator_start(void) {
 	chThdCreateStatic(frontal_regulator_thd_wa,
-			sizeof(frontal_regulator_thd_wa), NORMALPRIO, frontal_regulator_thd,
-			NULL);
+			sizeof(frontal_regulator_thd_wa),
+			NORMALPRIO, frontal_regulator_thd, NULL);
 }
 
 direction determine90(void) {
