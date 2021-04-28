@@ -15,8 +15,6 @@
 #include "regulator.h"
 #include "process_image.h"
 
-#define IR_THRESHOLD 500
-
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
 
@@ -38,7 +36,8 @@ int main(void) {
 	motor_straight();
 	obstacle_detection_start();
 	frontal_regulator_start();
-	lateral_regulator_start();
+//	lateral_regulator_start();
+	motor_straight();
 
 	while (1) {
 		/*
@@ -73,8 +72,8 @@ int main(void) {
 //			default:
 //				break;
 //		}
-		chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d",
-				get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+//		chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d",
+//				get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
 
 //		if (get_TOFIR_values().IR_l_prox < IR_THRESHOLD) {
 //		chSysLock();
@@ -82,10 +81,15 @@ int main(void) {
 //		motor_turn(LEFT, 90);
 //		}
 //		if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD) {
-		motor_turn(RIGHT, 90);
-		turn_wait();
+//		frontal_obstacle_wait();
+//		motor_turn(RIGHT, 90);
+//		turn_wait();
 //		}
-//		chThdSleepMilliseconds(1000);
+		chThdSleepMilliseconds(3000);
+
+		/*
+		 * Wrap motor control into thread and call wait function using internal semaphore
+		 */
 
 	}
 }
