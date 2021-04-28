@@ -11,7 +11,7 @@
 #define WHEEL_D 41 //mm
 #define WHEEL_STEP 1000 //number of steps per rotation
 
-static BSEMAPHORE_DECL(turnBlock_sem, TRUE);
+//static BSEMAPHORE_DECL(turnBlock_sem, TRUE);
 
 uint16_t motor_turn_step(uint16_t angle) {
 
@@ -56,7 +56,7 @@ void motor_turn(direction dir, uint16_t angle) {
 			break;
 		}
 	}
-	chBSemSignal(&turnBlock_sem);
+//	chBSemSignal(&turnBlock_sem);
 }
 
 void motor_straight(void){
@@ -64,6 +64,6 @@ void motor_straight(void){
 	right_motor_set_speed(MOTORSPEED);
 }
 
-void turn_wait(void) {
-	chBSemWait(&turnBlock_sem);
-}
+//void turn_wait(void) {
+//	chBSemWait(&turnBlock_sem);
+//}
