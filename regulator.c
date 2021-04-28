@@ -6,7 +6,6 @@
 #include <regulator.h>
 #include <main.h>
 #include <obstacle_detection.h>
-#include <motor_control.h>
 #include <motors.h>
 
 static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
@@ -15,11 +14,13 @@ static BSEMAPHORE_DECL(frontObstacle_sem, TRUE);
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 80
 
-#define FRONT_THRESHOLD (CELLSIZE - PUCK_D)/2
+#define FRONT_THRESHOLD 40
 #define RAND_THRESHOLD 100
 
+#define IR_THRESHOLD 500
+
 #define LATERAL_REGULATOR_PERIOD 10
-#define FRONTAL_REGULATOR_PERIOD 200
+#define FRONTAL_REGULATOR_PERIOD 50
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -69,7 +70,12 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
 //			chprintf((BaseSequentialStream *) &SD3, "SP Set \r\n");
-			chBSemSignal(&frontObstacle_sem);
+//			chBSemSignal(&frontObstacle_sem);
+//			motor_turn(determine90(),90);
+			chprintf((BaseSequentialStream *) &SD3, "Initiating turn \r\n");
+			motor_turn(LEFT,90);
+			chprintf((BaseSequentialStream *) &SD3, "Ending turn \r\n");
+			motor_straight();
 		}
 
 //			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
@@ -90,7 +96,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 void lateral_regulator_start(void) {
 	chThdCreateStatic(lateral_regulator_thd_wa,
 			sizeof(lateral_regulator_thd_wa),
-			NORMALPRIO, lateral_regulator_thd, NULL);
+			NORMALPRIO-1, lateral_regulator_thd, NULL);
 }
 
 void frontal_regulator_start(void) {
@@ -99,6 +105,22 @@ void frontal_regulator_start(void) {
 			NULL);
 }
 
-void frontal_obstacle_wait(void) {
-	chBSemWait(&frontObstacle_sem);
+direction determine90(void) {
+	direction dir;
+	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
+			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+	if (get_TOFIR_values().IR_l_prox < IR_THRESHOLD) {
+		dir = LEFT;
+	} else if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD) {
+		dir = RIGHT;
+	} else {
+		systime_t time = chVTGetSystemTime();
+		srand(time);
+		(rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) ? (dir = LEFT) : (dir = RIGHT);
+	}
+	return dir;
 }
+
+//void frontal_obstacle_wait(void) {
+//	chBSemWait(&frontObstacle_sem);
+//}
