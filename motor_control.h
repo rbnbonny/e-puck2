@@ -7,12 +7,12 @@ extern "C" {
 #endif
 
 typedef enum {
-	LEFT = 0, RIGHT,
+	LEFT = -1, RIGHT = 1,
 } direction;
 
 void motor_turn(direction, uint16_t);
 void motor_straight(void);
-uint8_t get_dir_flag(void);
+uint8_t get_dir(void);
 
 #ifdef __cplusplus
 }
