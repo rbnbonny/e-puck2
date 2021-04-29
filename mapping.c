@@ -84,6 +84,16 @@ void map_draw(void){
 	}
 }
 
+void map_draw_print(void){
+	for(uint8_t i = 0; i < 5; i++){
+		for(uint8_t j = 0; j< 5; j++){
+			switch(arr_map[i][j].draw){
+			//all 4x8 cases in form o f 0b000XXAAA
+			}
+		}
+	}
+}
+
 
 static THD_WORKING_AREA(Mappig_Value_wa, 1024);
 static THD_FUNCTION(Mapping_Value, arg) {
