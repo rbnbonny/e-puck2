@@ -5,13 +5,15 @@
 extern "C" {
 #endif
 
+#define WHEEL_D 41 //mm
+#define WHEEL_STEP 1000 //number of steps per rotation
+
 typedef enum {
-	LEFT = -1, RIGHT = 1,
+	LEFT = -1, STRAIGHT = 0, RIGHT = 1,
 } direction;
 
 void motor_turn(direction, uint16_t);
 void motor_straight(void);
-uint8_t get_dir(void);
 
 #ifdef __cplusplus
 }

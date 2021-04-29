@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+#include <motor_control.h>
+
 struct map{
 	uint16_t TOF_dis;
 	int IR_r_pro;
@@ -16,13 +18,12 @@ struct map{
 	uint8_t draw;
 };
 
-struct map arr_map[5][5] = {0};
-
-
 typedef enum {
 	NORTH = 0, EAST, SOUTH, WEST,
-} direction;
+} galileo;
 
+void mapping_start(void);
+void set_turn(direction);
 
 #ifdef __cplusplus
 }

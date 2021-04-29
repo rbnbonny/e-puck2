@@ -9,6 +9,7 @@
 #include <process_image.h>
 #include <blinker.h>
 #include <motors.h>
+#include <mapping.h>
 
 #define KP 0.05
 #define DIFFSPEED 5
@@ -83,6 +84,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //			} else {
 			dir = determine90();
 			call_blinker(dir);
+			set_turn(dir);
 			motor_turn(dir, 90);
 			motor_straight();
 //		}
