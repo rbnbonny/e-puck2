@@ -9,11 +9,8 @@
 
 //#define PRINT_VALUES
 
-#define TOF_SAMPLING_WAIT 100
+#define TOF_SAMPLING_WAIT 10
 //#define IR_SAMPLING_WAIT 100
-
-//static thread_t *TOFthd;
-//static thread_t *IRthd;
 
 TOFIR_msg_t TOFIR_values;
 
@@ -90,6 +87,6 @@ void obstacle_detection_start(void) {
 	NORMALPRIO, obstacle_detec_thd, NULL);
 }
 
-TOFIR_msg_t get_TOFIR_values(void){
+TOFIR_msg_t get_TOFIR_values(void) {
 	return TOFIR_values;
 }

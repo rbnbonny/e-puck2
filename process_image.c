@@ -9,10 +9,9 @@
 
 #include <process_image.h>
 
-static float distance_cm = 0;
-
-//semaphore
 static BSEMAPHORE_DECL(image_ready_sem, TRUE);
+
+uint8_t barcode_number = 0;
 
 static THD_WORKING_AREA(waCaptureImage, 256);
 static THD_FUNCTION(CaptureImage, arg) {
@@ -28,7 +27,6 @@ static THD_FUNCTION(CaptureImage, arg) {
 	dcmi_prepare();
 
 	while (1) {
-
 		//starts a capture
 		dcmi_capture_start();
 		//waits for the capture to be done
@@ -47,12 +45,13 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 	uint8_t *img_buff_ptr;
 	uint8_t image[IMAGE_BUFFER_SIZE] = { 0 };
-	uint8_t barcode_number = 0;
+
 
 	while (1) {
+
 		//waits until an image has been captured
 		chBSemWait(&image_ready_sem);
-		//gets the pointer to the array filled with the last image in RGB565    
+		//gets the pointer to the array filled with the last image in RGB565
 		img_buff_ptr = dcmi_get_last_image_ptr();
 		uint8_t a, b;
 		for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
@@ -67,10 +66,9 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 		binary_image(image);
 		barcode_number = edge_detection(image);
-		chprintf((BaseSequentialStream *) &SDU1, "barcode = %d\r\n",
-				barcode_number);
-		//SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
-
+//		chprintf((BaseSequentialStream *) &SD3, "barcode = %d\r\n",
+//				barcode_number);
+//		chThdSleepMilliseconds(50);
 	}
 }
 
@@ -194,13 +192,13 @@ uint8_t edge_detection(uint8_t *image) {
 	return b;
 }
 
-float get_distance_cm(void) {
-	return distance_cm;
-}
-
 void process_image_start(void) {
 	chThdCreateStatic(waProcessImage, sizeof(waProcessImage), NORMALPRIO,
 			ProcessImage, NULL);
 	chThdCreateStatic(waCaptureImage, sizeof(waCaptureImage), NORMALPRIO,
 			CaptureImage, NULL);
+}
+
+uint8_t get_barcode_number(void) {
+	return barcode_number;
 }

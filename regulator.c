@@ -6,19 +6,21 @@
 #include <regulator.h>
 #include <main.h>
 #include <obstacle_detection.h>
-#include <motor_control.h>
+#include <process_image.h>
+#include <blinker.h>
 #include <motors.h>
 
-#define KP 1
+#define KP 0.05
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 80
+#define THRESHOLD_ERR 50
 
 #define FRONT_THRESHOLD 40
-
 #define RAND_THRESHOLD 100
 
+#define IR_THRESHOLD 20
+
 #define LATERAL_REGULATOR_PERIOD 10
-#define FRONTAL_REGULATOR_PERIOD 200
+#define FRONTAL_REGULATOR_PERIOD 50
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -37,15 +39,16 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_lf_prox)
 				/ 2;
 		err = rightIR - leftIR;
-
-//		chprintf((BaseSequentialStream *) &SD3, "Error: %d \r\n", err);
+//		if (rightIR < IR_THRESHOLD || leftIR < IR_THRESHOLD) {
+//			err = 0;
+//		}
 
 		if (err < -THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
-			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
 		} else if (err > THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + KP * DIFFSPEED * err);
-			left_motor_set_speed(MOTORSPEED - KP * DIFFSPEED * err);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
 		}
 
 		chThdSleepUntilWindowed(time, time + MS2ST(LATERAL_REGULATOR_PERIOD));
@@ -58,24 +61,43 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	systime_t time;
+	direction dir;
 
 	while (1) {
 		time = chVTGetSystemTime();
-		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
-				get_TOFIR_values().TOF_dist);
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
-			srand(time);
-			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
-				palClearPad(GPIOD, GPIOD_LED3);
-				motor_turn(RIGHT, 90);
-				palSetPad(GPIOD, GPIOD_LED3);
-			} else {
-				palClearPad(GPIOD, GPIOD_LED7);
-				motor_turn(LEFT, 90);
-				palSetPad(GPIOD, GPIOD_LED7);
-			}
+//			if (get_barcode_number() > 0) {
+//				chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
+//						get_barcode_number());
+//				switch (get_barcode_number()) {
+//				case 1:
+//					motor_turn(RIGHT, 360);
+//					break;
+//				case 2:
+//					motor_turn(LEFT, 360);
+//					break;
+//				default:
+//					break;
+//				}
+//				motor_straight();
+//			} else {
+			dir = determine90();
+			call_blinker(dir);
+			motor_turn(dir, 90);
+			motor_straight();
+//		}
 		}
-		motor_straight();
+
+//			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
+//				palClearPad(GPIOD, GPIOD_LED3);
+//				motor_turn(RIGHT, 90);
+//				palSetPad(GPIOD, GPIOD_LED3);
+//			} else {
+//				palClearPad(GPIOD, GPIOD_LED7);
+//				motor_turn(LEFT, 90);
+//				palSetPad(GPIOD, GPIOD_LED7);
+//			}
+//		}
 		chThdSleepUntilWindowed(time, time + MS2ST(FRONTAL_REGULATOR_PERIOD));
 	}
 }
@@ -83,11 +105,30 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 void lateral_regulator_start(void) {
 	chThdCreateStatic(lateral_regulator_thd_wa,
 			sizeof(lateral_regulator_thd_wa),
-			NORMALPRIO, lateral_regulator_thd, NULL);
+			NORMALPRIO - 1, lateral_regulator_thd, NULL);
 }
 
 void frontal_regulator_start(void) {
+	blinker_start();
 	chThdCreateStatic(frontal_regulator_thd_wa,
-			sizeof(frontal_regulator_thd_wa), NORMALPRIO, frontal_regulator_thd,
-			NULL);
+			sizeof(frontal_regulator_thd_wa),
+			NORMALPRIO, frontal_regulator_thd, NULL);
 }
+
+direction determine90(void) {
+	direction dir;
+//	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
+//			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD) {
+		dir = LEFT;
+	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD) {
+		dir = RIGHT;
+	} else {
+		systime_t time = chVTGetSystemTime();
+		srand(time);
+		(rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) ? (dir = LEFT) : (dir =
+																	RIGHT);
+	}
+	return dir;
+}
+

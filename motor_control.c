@@ -8,7 +8,6 @@
 #include <motor_control.h>
 #include <motors.h>
 
-#define PUCK_D 53 //mm
 #define WHEEL_D 41 //mm
 #define WHEEL_STEP 1000 //number of steps per rotation
 
@@ -20,7 +19,6 @@ uint16_t motor_turn_step(uint16_t angle) {
 	uint16_t wheel_steps = 0;
 
 	relative_turn = angle * WHEEL_STEP / 360;
-
 	wheel_steps = PUCK_D * (uint16_t) relative_turn / WHEEL_D;
 
 	return wheel_steps;
@@ -39,11 +37,11 @@ void motor_turn(direction dir, uint16_t angle) {
 	turn_flag = 1;
 
 	if (dir == LEFT) {
-		right_motor_set_speed(MOTOR_SPEED);
-		left_motor_set_speed(-MOTOR_SPEED);
+		right_motor_set_speed(ROTSPEED);
+		left_motor_set_speed(-ROTSPEED);
 	} else if (dir == RIGHT) {
-		right_motor_set_speed(-MOTOR_SPEED);
-		left_motor_set_speed(MOTOR_SPEED);
+		right_motor_set_speed(-ROTSPEED);
+		left_motor_set_speed(ROTSPEED);
 	}
 
 	while (1) {
@@ -51,17 +49,17 @@ void motor_turn(direction dir, uint16_t angle) {
 		if (right_motor_get_pos() - pos_right > wheel_steps) {
 			right_motor_set_speed(0);
 			left_motor_set_speed(0);
-			return;
+			break;
 		}
 		if (left_motor_get_pos() - pos_left > wheel_steps) {
 			right_motor_set_speed(0);
 			left_motor_set_speed(0);
-			return;
+			break;
 		}
 	}
 }
 
-void motor_straight(void){
+void motor_straight(void) {
 	left_motor_set_speed(MOTORSPEED);
 	right_motor_set_speed(MOTORSPEED);
 }

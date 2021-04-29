@@ -14,6 +14,7 @@ CSRC += ./main.c \
 		./regulator.c \
 		./motor_control.c \
 		./process_image.c \
+		./blinker.c \
 
 
 #Header folders to include
