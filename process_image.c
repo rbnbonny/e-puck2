@@ -27,7 +27,6 @@ static THD_FUNCTION(CaptureImage, arg) {
 	dcmi_prepare();
 
 	while (1) {
-
 		//starts a capture
 		dcmi_capture_start();
 		//waits for the capture to be done
@@ -47,10 +46,12 @@ static THD_FUNCTION(ProcessImage, arg) {
 	uint8_t *img_buff_ptr;
 	uint8_t image[IMAGE_BUFFER_SIZE] = { 0 };
 
+
 	while (1) {
+
 		//waits until an image has been captured
 		chBSemWait(&image_ready_sem);
-		//gets the pointer to the array filled with the last image in RGB565    
+		//gets the pointer to the array filled with the last image in RGB565
 		img_buff_ptr = dcmi_get_last_image_ptr();
 		uint8_t a, b;
 		for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
@@ -65,10 +66,9 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 		binary_image(image);
 		barcode_number = edge_detection(image);
-//		chprintf((BaseSequentialStream *) &SDU1, "barcode = %d\r\n",
+//		chprintf((BaseSequentialStream *) &SD3, "barcode = %d\r\n",
 //				barcode_number);
-		//SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
-
+//		chThdSleepMilliseconds(50);
 	}
 }
 
@@ -199,6 +199,6 @@ void process_image_start(void) {
 			CaptureImage, NULL);
 }
 
-uint8_t get_barcode_number(void){
+uint8_t get_barcode_number(void) {
 	return barcode_number;
 }

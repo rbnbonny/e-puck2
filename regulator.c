@@ -6,6 +6,7 @@
 #include <regulator.h>
 #include <main.h>
 #include <obstacle_detection.h>
+#include <process_image.h>
 #include <blinker.h>
 #include <motors.h>
 
@@ -13,7 +14,7 @@
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 50
 
-#define FRONT_THRESHOLD 55
+#define FRONT_THRESHOLD 40
 #define RAND_THRESHOLD 100
 
 #define IR_THRESHOLD 20
@@ -65,10 +66,26 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 	while (1) {
 		time = chVTGetSystemTime();
 		if (get_TOFIR_values().TOF_dist < FRONT_THRESHOLD) {
+//			if (get_barcode_number() > 0) {
+//				chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
+//						get_barcode_number());
+//				switch (get_barcode_number()) {
+//				case 1:
+//					motor_turn(RIGHT, 360);
+//					break;
+//				case 2:
+//					motor_turn(LEFT, 360);
+//					break;
+//				default:
+//					break;
+//				}
+//				motor_straight();
+//			} else {
 			dir = determine90();
 			call_blinker(dir);
 			motor_turn(dir, 90);
 			motor_straight();
+//		}
 		}
 
 //			if (rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) {
@@ -100,8 +117,8 @@ void frontal_regulator_start(void) {
 
 direction determine90(void) {
 	direction dir;
-	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
-			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+//	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
+//			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
 	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD) {
 		dir = LEFT;
 	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD) {

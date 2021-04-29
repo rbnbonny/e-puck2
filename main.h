@@ -12,8 +12,8 @@ extern "C" {
 #define CELLSIZE 120
 #define PUCK_D 53 //mm
 
-#define MOTORSPEED 1000
-#define ROTSPEED 500
+#define MOTORSPEED 300
+#define ROTSPEED 200
 #define IMAGE_BUFFER_SIZE 640
 
 /** Robot wide IPC bus. */
