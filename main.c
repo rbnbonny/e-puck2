@@ -14,6 +14,7 @@
 #include "motor_control.h"
 #include "regulator.h"
 #include "process_image.h"
+#include "music.h"
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -38,7 +39,8 @@ int main(void) {
 	process_image_start();
 	obstacle_detection_start();
 	frontal_regulator_start();
-//	lateral_regulator_start();
+	lateral_regulator_start();
+	music_start();
 	motor_straight();
 
 	while (1) {
@@ -49,7 +51,6 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-
 		chThdSleepMilliseconds(100);
 	}
 }
