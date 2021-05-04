@@ -5,6 +5,7 @@
 
 #include <music.h>
 #include <process_image.h>
+#include <obstacle_detection.h>
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
 
@@ -18,50 +19,43 @@ static THD_FUNCTION(music_thd, arg) {
 	playMelodyStart();
 
 	while (1) {
-		chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
-				get_barcode_number());
-		switch (get_barcode_number()) {
-		case 1:
-//			stopCurrentMelody();
-			playMelody(MARIO_START, ML_SIMPLE_PLAY, NULL);
-			break;
-		case 2:
-//			stopCurrentMelody();
-			playMelody(MARIO_FLAG, ML_SIMPLE_PLAY, NULL);
-			break;
-		default:
-			break;
+//		chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
+//				get_barcode_number());
+		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 60) {
+
+			switch (get_barcode_number()) {
+			case 1:
+				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
+				break;
+			case 2:
+				playMelody(WE_ARE_THE_CHAMPIONS, ML_FORCE_CHANGE, NULL);
+				break;
+			case 3:
+				playMelody(RUSSIA, ML_FORCE_CHANGE, NULL);
+				break;
+			case 4:
+				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
+				break;
+			case 5:
+				playMelody(UNDERWORLD, ML_FORCE_CHANGE, NULL);
+				break;
+			case 6:
+				playMelody(WALKING, ML_FORCE_CHANGE, NULL);
+				break;
+			case 7:
+				playMelody(PIRATES_OF_THE_CARIBBEAN, ML_FORCE_CHANGE, NULL);
+				break;
+			case 8:
+				playMelody(SIMPSON, ML_FORCE_CHANGE, NULL);
+				break;
+			case 9:
+				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
+				break;
+			default:
+				break;
+			}
 		}
-		chThdSleepMilliseconds(10);
-
-//		playMelody(IMPOSSIBLE_MISSION, ML_SIMPLE_PLAY, NULL);
-//		chThdSleepMilliseconds(10000);
-//		stopCurrentMelody();
-//		playMelody(WE_ARE_THE_CHAMPIONS, ML_SIMPLE_PLAY, NULL);
-//		chThdSleepMilliseconds(10000);
-//		playMelody(RUSSIA, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(UNDERWORLD, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(MARIO_START, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(MARIO_DEATH, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(MARIO_FLAG, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(WALKING, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(PIRATES_OF_THE_CARIBBEAN, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(SIMPSON, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(STARWARS, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(SANDSTORMS, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-//		playMelody(SEVEN_NATION_ARMY, ML_SIMPLE_PLAY, NULL);
-//		waitMelodyHasFinished();
-
+		chThdSleepMilliseconds(100);
 	}
 }
 
