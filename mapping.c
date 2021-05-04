@@ -21,6 +21,8 @@ static direction turn_flag = 0;
 static struct map arr_map[5][5] = { 0 };
 static picasso general_map[11][11] = { 0 };
 
+static galileo richtung = 0;
+
 static uint8_t counter = 0;
 
 int32_t mm_to_step(int dis, int tolerance) {
@@ -28,14 +30,17 @@ int32_t mm_to_step(int dis, int tolerance) {
 	return step;
 }
 
-void set_compass(uint8_t* compass, direction dir) {
+void set_compass(galileo *compass, direction dir) {
 	chprintf((BaseSequentialStream *) &SD3, "direction = %d \r\n", dir);
-	*compass += dir;
-	if (*compass == 4)
-		*compass = 0;
-	if (*compass == 255)
-		*compass = 3;
+	galileo comp = *compass;
+	comp += dir;
+	if (comp == 4)
+		comp = 0;
+	if (comp == 255)
+		comp = 3;
+	*compass = comp;
 	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", *compass);
+
 }
 
 void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
@@ -193,8 +198,8 @@ static THD_FUNCTION(Mapping_Value, arg) {
 	uint8_t a = 0; //y Koordinate
 	uint8_t b = 0; //x Koordinate
 
-	galileo compass_old = NORTH;
-	galileo compass = NORTH;
+	static galileo compass_old = NORTH;
+	static galileo compass = NORTH;
 
 	int32_t path = 0;
 
@@ -205,35 +210,32 @@ static THD_FUNCTION(Mapping_Value, arg) {
 
 		switch (turn_flag) {
 		case STRAIGHT:
-			chprintf((BaseSequentialStream *) &SD3, "straight \r\n");
 			if (path > mm_to_step(SQUARE_SIDE, 0)
 					&& get_TOFIR_values().TOF_dist > 50) {
 				set_compass(&compass, turn_flag);
 				map_data(compass, compass_old, &a, &b);
 				r_motor_pos_origin = right_motor_get_pos();
 				l_motor_pos_origin = left_motor_get_pos();
-				compass = compass_old;
+				compass_old = compass;
 				map_draw();
 			}
 
 			break;
 		case LEFT:
-			chprintf((BaseSequentialStream *) &SD3, "left \r\n");
 			set_compass(&compass, turn_flag);
 			map_data(compass, compass_old, &a, &b);
 			r_motor_pos_origin = right_motor_get_pos();
 			l_motor_pos_origin = left_motor_get_pos();
-			compass = compass_old;
+			compass_old = compass;
 			turn_flag = STRAIGHT;
 			map_draw();
 			break;
 		case RIGHT:
-			chprintf((BaseSequentialStream *) &SD3, "right \r\n");
 			set_compass(&compass, turn_flag);
 			map_data(compass, compass_old, &a, &b);
 			r_motor_pos_origin = right_motor_get_pos();
 			l_motor_pos_origin = left_motor_get_pos();
-			compass = compass_old;
+			compass_old = compass;
 			turn_flag = STRAIGHT;
 			map_draw();
 			break;
