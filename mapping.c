@@ -21,8 +21,6 @@ static direction turn_flag = 0;
 static struct map arr_map[5][5] = { 0 };
 static picasso general_map[11][11] = { 0 };
 
-static galileo richtung = 0;
-
 static uint8_t counter = 0;
 
 int32_t mm_to_step(int dis, int tolerance) {
@@ -31,7 +29,7 @@ int32_t mm_to_step(int dis, int tolerance) {
 }
 
 void set_compass(galileo *compass, direction dir) {
-	chprintf((BaseSequentialStream *) &SD3, "direction = %d \r\n", dir);
+	//chprintf((BaseSequentialStream *) &SD3, "direction = %d \r\n", dir);
 	galileo comp = *compass;
 	comp += dir;
 	if (comp == 4)
@@ -39,7 +37,7 @@ void set_compass(galileo *compass, direction dir) {
 	if (comp == 255)
 		comp = 3;
 	*compass = comp;
-	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", *compass);
+	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", *compass);
 
 }
 
@@ -57,11 +55,10 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	counter++;
 	if(counter >=25)
 		counter = 0;
-//
-//	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
-//	chprintf((BaseSequentialStream *) &SD3, "y coordinate = %d \r\n", i);
-//	chprintf((BaseSequentialStream *) &SD3, "x xoordinate = %d \r\n", j);
-//	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
+
+	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
+	chprintf((BaseSequentialStream *) &SD3, "Y = %d \t X = %d \r\n", i, j);
+	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
 
 
 
