@@ -38,6 +38,9 @@ int main(void) {
 
 	process_image_start();
 	obstacle_detection_start();
+
+	chThdSleepMilliseconds(1000);
+
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();

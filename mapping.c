@@ -29,11 +29,13 @@ int32_t mm_to_step(int dis, int tolerance) {
 }
 
 void set_compass(uint8_t* compass, direction dir) {
-	compass += dir;
+	chprintf((BaseSequentialStream *) &SD3, "direction = %d \r\n", dir);
+	*compass += dir;
 	if (*compass == 4)
 		*compass = 0;
 	if (*compass == 255)
 		*compass = 3;
+	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", *compass);
 }
 
 void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
@@ -50,11 +52,11 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	counter++;
 	if(counter >=25)
 		counter = 0;
-
-	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
-	chprintf((BaseSequentialStream *) &SD3, "y coordinate = %d \r\n", i);
-	chprintf((BaseSequentialStream *) &SD3, "x xoordinate = %d \r\n", j);
-	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
+//
+//	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
+//	chprintf((BaseSequentialStream *) &SD3, "y coordinate = %d \r\n", i);
+//	chprintf((BaseSequentialStream *) &SD3, "x xoordinate = %d \r\n", j);
+//	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
 
 
 
@@ -203,6 +205,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 
 		switch (turn_flag) {
 		case STRAIGHT:
+			chprintf((BaseSequentialStream *) &SD3, "straight \r\n");
 			if (path > mm_to_step(SQUARE_SIDE, 0)
 					&& get_TOFIR_values().TOF_dist > 50) {
 				set_compass(&compass, turn_flag);
@@ -215,6 +218,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 
 			break;
 		case LEFT:
+			chprintf((BaseSequentialStream *) &SD3, "left \r\n");
 			set_compass(&compass, turn_flag);
 			map_data(compass, compass_old, &a, &b);
 			r_motor_pos_origin = right_motor_get_pos();
@@ -224,6 +228,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			map_draw();
 			break;
 		case RIGHT:
+			chprintf((BaseSequentialStream *) &SD3, "right \r\n");
 			set_compass(&compass, turn_flag);
 			map_data(compass, compass_old, &a, &b);
 			r_motor_pos_origin = right_motor_get_pos();
