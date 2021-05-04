@@ -21,6 +21,8 @@ static direction turn_flag = 0;
 static struct map arr_map[5][5] = { 0 };
 static picasso general_map[11][11] = { 0 };
 
+static uint8_t counter = 0;
+
 int32_t mm_to_step(int dis, int tolerance) {
 	int32_t step = (dis - tolerance) * WHEEL_STEP / (WHEEL_D * M_PI);
 	return step;
@@ -45,38 +47,51 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	arr_map[i][j].dir_old = compass_old;
 	arr_map[i][j].dir = compass;
 
+	counter++;
+	if(counter >=25)
+		counter = 0;
+
+	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
+	chprintf((BaseSequentialStream *) &SD3, "y coordinate = %d \r\n", i);
+	chprintf((BaseSequentialStream *) &SD3, "x xoordinate = %d \r\n", j);
+	chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
+
+
+
 	switch (compass) {
 	case NORTH:
-		a++;
+		i++;
 		break;
 	case EAST:
-		b++;
+		j++;
 		break;
 	case SOUTH:
-		a--;
+		i--;
 		break;
 	case WEST:
-		b--;
+		j--;
 		break;
 	}
+	*a = i;
+	*b = j;
 }
 
 uint8_t map_draw_f_wall( i, j) {
-	if (arr_map[i][j].TOF_dis < 20)
+	if (arr_map[i][j].TOF_dis < 30)
 		return WALL;
 	else
 		return EMPTY;
 }
 
 uint8_t map_draw_l_wall( i, j) {
-	if (arr_map[j][j].IR_l_pro < 10)
+	if (arr_map[j][j].IR_l_pro > 30)
 		return WALL;
 	else
 		return EMPTY;
 }
 
 uint8_t map_draw_r_wall( i, j) {
-	if (arr_map[j][j].IR_r_pro < 10)
+	if (arr_map[j][j].IR_r_pro > 30)
 		return WALL;
 	else
 		return EMPTY;
@@ -142,26 +157,26 @@ void map_draw() {
 		general_map[0][j] = WALL;
 		general_map[10][j] = WALL;
 	}
-	for (uint8_t i = 2; i < 9; i += 2) {
-		for (uint8_t j = 2; j < 9; j += 2) {
-			if (general_map[i][j] == WALL) {
-				if (general_map[i + 2][j] == WALL
-						&& general_map[i + 1][j] == NOTHING)
-					general_map[i + 1][j] = WALL;
-				if (general_map[i][j + 2] == WALL
-						&& general_map[i][j + 1] == NOTHING)
-					general_map[i][j + 1] = WALL;
-				if (general_map[i - 2][j] == WALL
-						&& general_map[i - 1][j] == NOTHING)
-					general_map[i - 1][j] = WALL;
-				if (general_map[i][j - 2] == WALL
-						&& general_map[i][j - 1] == NOTHING)
-					general_map[i][j - 1] = WALL;
-			}
-		}
-	}
+//	for (uint8_t i = 2; i < 9; i += 2) {
+//		for (uint8_t j = 2; j < 9; j += 2) {
+//			if (general_map[i][j] == WALL) {
+//				if (general_map[i + 2][j] == WALL
+//						&& general_map[i + 1][j] == NOTHING)
+//					general_map[i + 1][j] = WALL;
+//				if (general_map[i][j + 2] == WALL
+//						&& general_map[i][j + 1] == NOTHING)
+//					general_map[i][j + 1] = WALL;
+//				if (general_map[i - 2][j] == WALL
+//						&& general_map[i - 1][j] == NOTHING)
+//					general_map[i - 1][j] = WALL;
+//				if (general_map[i][j - 2] == WALL
+//						&& general_map[i][j - 1] == NOTHING)
+//					general_map[i][j - 1] = WALL;
+//			}
+//		}
+//	}
 
-	map_print();
+	//map_print();
 }
 
 static THD_WORKING_AREA(Mapping_Value_wa, 1024);
@@ -179,7 +194,6 @@ static THD_FUNCTION(Mapping_Value, arg) {
 	galileo compass_old = NORTH;
 	galileo compass = NORTH;
 
-//	direction dir = 0;
 	int32_t path = 0;
 
 	while (1) {
@@ -189,7 +203,6 @@ static THD_FUNCTION(Mapping_Value, arg) {
 
 		switch (turn_flag) {
 		case STRAIGHT:
-
 			if (path > mm_to_step(SQUARE_SIDE, 0)
 					&& get_TOFIR_values().TOF_dist > 50) {
 				set_compass(&compass, turn_flag);
@@ -197,6 +210,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 				r_motor_pos_origin = right_motor_get_pos();
 				l_motor_pos_origin = left_motor_get_pos();
 				compass = compass_old;
+				map_draw();
 			}
 
 			break;
@@ -207,7 +221,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			l_motor_pos_origin = left_motor_get_pos();
 			compass = compass_old;
 			turn_flag = STRAIGHT;
-
+			map_draw();
 			break;
 		case RIGHT:
 			set_compass(&compass, turn_flag);
@@ -216,43 +230,13 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			l_motor_pos_origin = left_motor_get_pos();
 			compass = compass_old;
 			turn_flag = STRAIGHT;
-
+			map_draw();
 			break;
 		default:
 			break;
 		}
 
-		map_draw();
-
-//			dir = get_dir();
-//			if (dir == -1) {
-//				map_data(set_compass(&compass, dir), compass_old, &a, &b);
-//				r_motor_pos_origin = right_motor_get_pos();
-//				compass_old = compass;
-//			}
-//			if (dir == 1) {
-//				map_data(set_compass(dir), compass_old, &a, &b);
-//				r_motor_pos_origin = right_motor_get_pos();
-//				compass_old = compass;
-//			}
-//			if (dir == 0) {
-//				//mach nichts
-//			}
-//		} else if (path >= mm_to_step(SQUARE_SIDE, 0)) {
-//			if (get_TOFIR_values().TOF_dist > 20) {
-//				dir = 0; //soll geradeaus anziegen
-//				map_data(set_compass(dir), compass_old, &a, &b);
-//				r_motor_pos_origin = right_motor_get_pos();
-//				compass_old = compass;
-//			}
-//			if (get_TOFIR_values().TOF_dist < 20) {
-//				//mach nichts oder hol dir auch info in welche ritg du drehst
-//			}
-//		} else {
-//			//do nothing
-//		}
-
-//		chThdSleepMilliseconds(IR_SAMPLING_WAIT);
+		chThdSleepMilliseconds(100);
 	}
 }
 
