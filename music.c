@@ -14,6 +14,8 @@ static THD_FUNCTION(music_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
+	static bool confirmFlag = false;
+
 	dac_start();
 //	dac_power_speaker(true);
 	playMelodyStart();
@@ -21,7 +23,10 @@ static THD_FUNCTION(music_thd, arg) {
 	while (1) {
 //		chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
 //				get_barcode_number());
-		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 60) {
+
+		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 80) {
+			confirmFlag = true;
+		} else if (confirmFlag) {
 
 			switch (get_barcode_number()) {
 			case 1:
@@ -53,6 +58,7 @@ static THD_FUNCTION(music_thd, arg) {
 				break;
 			default:
 				break;
+				confirmFlag = false;
 			}
 		}
 		chThdSleepMilliseconds(100);
