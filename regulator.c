@@ -132,8 +132,8 @@ void frontal_regulator_start(void) {
 
 direction determine90(void) {
 	direction dir;
-	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
-			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+//	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
+//			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
 	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD) {
 		dir = LEFT;
 	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD) {
