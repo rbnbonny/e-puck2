@@ -11,17 +11,18 @@
 #include <motors.h>
 #include <mapping.h>
 
-#define KP 0.05
+#define KP 0.005
+#define KI 0.0001
 #define DIFFSPEED 5
 #define THRESHOLD_ERR 50
 
-#define FRONT_THRESHOLD 40
+#define FRONT_THRESHOLD 50
 #define RAND_THRESHOLD 100
 
 #define IR_THRESHOLD 50
 
-#define LATERAL_REGULATOR_PERIOD 10
-#define FRONTAL_REGULATOR_PERIOD 50
+#define LATERAL_REGULATOR_PERIOD 50
+#define FRONTAL_REGULATOR_PERIOD 200
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -32,6 +33,7 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 	int err = 0;
 	int rightIR = 0;
 	int leftIR = 0;
+	int integ = 0;
 
 	while (1) {
 		time = chVTGetSystemTime();
@@ -39,17 +41,28 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_lf_prox)
 				/ 2;
+//		err = rightIR - leftIR;
+//		integ += err;
+//		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
+
 		err = rightIR - leftIR;
-//		if (rightIR < IR_THRESHOLD || leftIR < IR_THRESHOLD) {
-//			err = 0;
+		integ += err;
+
+
+		if (rightIR < IR_THRESHOLD || leftIR < IR_THRESHOLD) {
+			err = 0;
+			integ = 0;
+		}
+
+//		else {
 //		}
 
 		if (err < -THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
-			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP + integ * KI);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP - integ * KI);
 		} else if (err > THRESHOLD_ERR) {
-			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP);
-			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP);
+			right_motor_set_speed(MOTORSPEED + DIFFSPEED * err * KP + integ * KI);
+			left_motor_set_speed(MOTORSPEED - DIFFSPEED * err * KP - integ * KI);
 		}
 
 		chThdSleepUntilWindowed(time, time + MS2ST(LATERAL_REGULATOR_PERIOD));

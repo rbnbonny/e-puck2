@@ -15,6 +15,7 @@
 #include "regulator.h"
 #include "process_image.h"
 #include "mapping.h"
+#include "music.h"
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -36,15 +37,17 @@ int main(void) {
     dcmi_start();
 	po8030_start();
 
+
 	process_image_start();
 	obstacle_detection_start();
 
 	chThdSleepMilliseconds(1000);
 
+	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();
-	motor_straight();
+	music_start();
 
 	while (1) {
 		/*
@@ -54,7 +57,6 @@ int main(void) {
 		 * 4. Calculate map
 		 * 5. Transmit map
 		 */
-
 		chThdSleepMilliseconds(100);
 	}
 }
