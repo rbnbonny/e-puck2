@@ -51,13 +51,14 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	arr_map[i][j].IR_l_pro = get_TOFIR_values().IR_l_prox;
 	arr_map[i][j].dir_old = compass_old;
 	arr_map[i][j].dir = compass;
+	arr_map[i][j].conquest = 1;
 
 	counter++;
 	if (counter >= 25)
 		counter = 0;
 
-	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
-	chprintf((BaseSequentialStream *) &SD3, "Y = %d \t X = %d \r\n", i, j);
+	//chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
+	//chprintf((BaseSequentialStream *) &SD3, "Y = %d \t X = %d \r\n", i, j);
 	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
 
 	switch (compass) {
@@ -79,21 +80,21 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 }
 
 uint8_t map_draw_f_wall( i, j) {
-	if (arr_map[i][j].TOF_dis < 30)
+	if (arr_map[i][j].TOF_dis < 70)
 		return WALL;
 	else
 		return EMPTY;
 }
 
 uint8_t map_draw_l_wall( i, j) {
-	if (arr_map[j][j].IR_l_pro > 30)
+	if (arr_map[i][j].IR_l_pro > 150)
 		return WALL;
 	else
 		return EMPTY;
 }
 
 uint8_t map_draw_r_wall( i, j) {
-	if (arr_map[j][j].IR_r_pro > 30)
+	if (arr_map[i][j].IR_r_pro > 150)
 		return WALL;
 	else
 		return EMPTY;
@@ -108,13 +109,13 @@ void map_print(void) {
 				chprintf((BaseSequentialStream *) &SD3, ".");
 				break;
 			case ROBOT:
-				chprintf((BaseSequentialStream *) &SD3, "R");
+				chprintf((BaseSequentialStream *) &SD3, "o");
 				break;
 			case WALL:
 				chprintf((BaseSequentialStream *) &SD3, "X");
 				break;
 			case EMPTY:
-				chprintf((BaseSequentialStream *) &SD3, ":");
+				chprintf((BaseSequentialStream *) &SD3, "o");
 				break;
 			}
 		}
@@ -124,30 +125,38 @@ void map_print(void) {
 }
 
 void map_draw() {
+	for(uint8_t i = 0; i < 11; i++){
+		for(uint8_t j = 0; j < 11; j++){
+			general_map[i][j] = NOTHING;
+		}
+	}
+
 	for (uint8_t i = 0; i < 5; i++) {
 		for (uint8_t j = 0; j < 5; j++) {
-			general_map[2 * i + 1][2 * j + 1] = ROBOT;
-			switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
-			case NORTH:
-				general_map[2 * i + 2][2 * j + 1] = map_draw_f_wall(i, j);
-				general_map[2 * i + 1][2 * j] = map_draw_l_wall(i, j);
-				general_map[2 * i + 1][2 * j + 2] = map_draw_r_wall(i, j);
-				break;
-			case EAST:
-				general_map[2 * i + 1][2 * j + 2] = map_draw_f_wall(i, j);
-				general_map[2 * i + 2][2 * j + 1] = map_draw_l_wall(i, j);
-				general_map[2 * i][2 * j + 1] = map_draw_r_wall(i, j);
-				break;
-			case SOUTH:
-				general_map[2 * i][2 * j + 1] = map_draw_f_wall(i, j);
-				general_map[2 * i + 1][2 * j + 2] = map_draw_l_wall(i, j);
-				general_map[2 * i + 1][2 * j] = map_draw_r_wall(i, j);
-				break;
-			case WEST:
-				general_map[2 * i + 1][2 * j] = map_draw_f_wall(i, j);
-				general_map[2 * i][2 * j + 1] = map_draw_l_wall(i, j);
-				general_map[2 * i + 2][2 * j + 1] = map_draw_r_wall(i, j);
-				break;
+			if (arr_map[i][j].conquest == 1) {
+				general_map[2 * i + 1][2 * j + 1] = ROBOT;
+				switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
+				case NORTH:
+					general_map[2 * i + 2][2 * j + 1] = map_draw_f_wall(i, j);
+					general_map[2 * i + 1][2 * j] = map_draw_l_wall(i, j);
+					general_map[2 * i + 1][2 * j + 2] = map_draw_r_wall(i, j);
+					break;
+				case EAST:
+					general_map[2 * i + 1][2 * j + 2] = map_draw_f_wall(i, j);
+					general_map[2 * i + 2][2 * j + 1] = map_draw_l_wall(i, j);
+					general_map[2 * i][2 * j + 1] = map_draw_r_wall(i, j);
+					break;
+				case SOUTH:
+					general_map[2 * i][2 * j + 1] = map_draw_f_wall(i, j);
+					general_map[2 * i + 1][2 * j + 2] = map_draw_l_wall(i, j);
+					general_map[2 * i + 1][2 * j] = map_draw_r_wall(i, j);
+					break;
+				case WEST:
+					general_map[2 * i + 1][2 * j] = map_draw_f_wall(i, j);
+					general_map[2 * i][2 * j + 1] = map_draw_l_wall(i, j);
+					general_map[2 * i + 2][2 * j + 1] = map_draw_r_wall(i, j);
+					break;
+				}
 			}
 		}
 	}
@@ -159,26 +168,29 @@ void map_draw() {
 		general_map[0][j] = WALL;
 		general_map[10][j] = WALL;
 	}
-//	for (uint8_t i = 2; i < 9; i += 2) {
-//		for (uint8_t j = 2; j < 9; j += 2) {
-//			if (general_map[i][j] == WALL) {
-//				if (general_map[i + 2][j] == WALL
-//						&& general_map[i + 1][j] == NOTHING)
-//					general_map[i + 1][j] = WALL;
-//				if (general_map[i][j + 2] == WALL
-//						&& general_map[i][j + 1] == NOTHING)
-//					general_map[i][j + 1] = WALL;
-//				if (general_map[i - 2][j] == WALL
-//						&& general_map[i - 1][j] == NOTHING)
-//					general_map[i - 1][j] = WALL;
-//				if (general_map[i][j - 2] == WALL
-//						&& general_map[i][j - 1] == NOTHING)
-//					general_map[i][j - 1] = WALL;
-//			}
-//		}
-//	}
 
-	//map_print();
+
+	for (uint8_t i = 1; i < 8; i += 2) {
+		for (uint8_t j = 2; j < 9; j += 2) {
+			if (general_map[i][j] == WALL) {
+				if (general_map[i + 2][j] == WALL
+						&& general_map[i + 1][j] == NOTHING)
+					general_map[i + 1][j] = WALL;
+				if (general_map[i][j + 2] == WALL
+						&& general_map[i][j + 1] == NOTHING)
+					general_map[i][j + 1] = WALL;
+				if (general_map[i - 2][j] == WALL
+						&& general_map[i - 1][j] == NOTHING)
+					general_map[i - 1][j] = WALL;
+				if (general_map[i][j - 2] == WALL
+						&& general_map[i][j - 1] == NOTHING)
+					general_map[i][j - 1] = WALL;
+			}
+		}
+	}
+	chprintf((BaseSequentialStream *) &SD3, "%d \r\n", general_map[4][2]);
+
+	map_print();
 }
 
 static THD_WORKING_AREA(Mapping_Value_wa, 4096);

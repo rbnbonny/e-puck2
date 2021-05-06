@@ -15,7 +15,7 @@ struct map{
 	int IR_l_pro;
 	uint8_t dir_old;
 	uint8_t dir;
-	uint8_t draw;
+	uint8_t conquest;
 };
 
 typedef enum {
