@@ -53,14 +53,12 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	arr_map[i][j].dir = compass;
 
 	counter++;
-	if(counter >=25)
+	if (counter >= 25)
 		counter = 0;
 
 	chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
 	chprintf((BaseSequentialStream *) &SD3, "Y = %d \t X = %d \r\n", i, j);
 	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
-
-
 
 	switch (compass) {
 	case NORTH:
@@ -183,14 +181,14 @@ void map_draw() {
 	//map_print();
 }
 
-static THD_WORKING_AREA(Mapping_Value_wa, 1024);
+static THD_WORKING_AREA(Mapping_Value_wa, 4096);
 static THD_FUNCTION(Mapping_Value, arg) {
 
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
-	r_motor_pos_origin = right_motor_get_pos(); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
-	l_motor_pos_origin = left_motor_get_pos(); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
+	r_motor_pos_origin = right_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
+	l_motor_pos_origin = left_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
 
 	uint8_t a = 0; //y Koordinate
 	uint8_t b = 0; //x Koordinate
