@@ -240,7 +240,7 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			break;
 		}
 
-		chThdSleepMilliseconds(100);
+		chThdSleepMilliseconds(500);
 	}
 }
 

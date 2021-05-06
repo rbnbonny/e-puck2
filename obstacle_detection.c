@@ -9,10 +9,10 @@
 
 //#define PRINT_VALUES
 
-#define TOF_SAMPLING_WAIT 50
-#define IR_SAMPLING_WAIT 100
+#define TOF_SAMPLING_WAIT 120
+#define IR_SAMPLING_WAIT 80
 
-TOFIR_msg_t TOFIR_values;
+static TOFIR_msg_t TOFIR_values;
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);

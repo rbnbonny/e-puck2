@@ -11,18 +11,18 @@
 #include <motors.h>
 #include <mapping.h>
 
-#define KP 0.005
-#define KI 0.0001
+#define KP 0.06
+#define KI 0.00008//.001
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 50
+#define THRESHOLD_ERR 0
 
 #define FRONT_THRESHOLD 50
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD 50
+#define IR_THRESHOLD 80
 
-#define LATERAL_REGULATOR_PERIOD 50
-#define FRONTAL_REGULATOR_PERIOD 200
+#define LATERAL_REGULATOR_PERIOD 20
+#define FRONTAL_REGULATOR_PERIOD 80
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 1024);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
