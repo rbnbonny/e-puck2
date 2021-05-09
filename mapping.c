@@ -137,24 +137,36 @@ void map_draw() {
 				general_map[2 * i + 1][2 * j + 1] = ROBOT;
 				switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
 				case NORTH:
-					general_map[2 * i + 2][2 * j + 1] = map_draw_f_wall(i, j);
-					general_map[2 * i + 1][2 * j] = map_draw_l_wall(i, j);
-					general_map[2 * i + 1][2 * j + 2] = map_draw_r_wall(i, j);
+					for (uint8_t k = 2 * j; k < 2 * j + 3; k++)
+						general_map[2 * i + 2][k] = map_draw_f_wall(i, j); //2*j+1
+					for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+						general_map[k][2 * j] = map_draw_l_wall(i, j); //2*i+1
+						general_map[k][2 * j + 2] = map_draw_r_wall(i, j); //2*i+1
+					}
 					break;
 				case EAST:
-					general_map[2 * i + 1][2 * j + 2] = map_draw_f_wall(i, j);
-					general_map[2 * i + 2][2 * j + 1] = map_draw_l_wall(i, j);
-					general_map[2 * i][2 * j + 1] = map_draw_r_wall(i, j);
+					for (uint8_t k = 2 * i; k < 2 * i + 3; k++)
+						general_map[k][2 * j + 2] = map_draw_f_wall(i, j);
+					for (uint8_t k = 2 * j; k < 2 * j * 3; k++) {
+						general_map[2 * i + 2][k] = map_draw_l_wall(i, j);
+						general_map[2 * i][k] = map_draw_r_wall(i, j);
+					}
 					break;
 				case SOUTH:
-					general_map[2 * i][2 * j + 1] = map_draw_f_wall(i, j);
-					general_map[2 * i + 1][2 * j + 2] = map_draw_l_wall(i, j);
-					general_map[2 * i + 1][2 * j] = map_draw_r_wall(i, j);
+					for (uint8_t k = 2 * j; k < 2 * j + 3; k++)
+						general_map[2 * i][k] = map_draw_f_wall(i, j);
+					for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+						general_map[k][2 * j + 2] = map_draw_l_wall(i, j);
+						general_map[k][2 * j] = map_draw_r_wall(i, j);
+					}
 					break;
 				case WEST:
-					general_map[2 * i + 1][2 * j] = map_draw_f_wall(i, j);
-					general_map[2 * i][2 * j + 1] = map_draw_l_wall(i, j);
-					general_map[2 * i + 2][2 * j + 1] = map_draw_r_wall(i, j);
+					for (uint8_t k = 2 * i; k < 2 * i + 3; k++)
+						general_map[k][2 * j] = map_draw_f_wall(i, j);
+					for (uint8_t k = 2 * j; k < 2 * j * 3; k++) {
+						general_map[2 * i][k] = map_draw_l_wall(i, j);
+						general_map[2 * i + 2][k] = map_draw_r_wall(i, j);
+					}
 					break;
 				}
 			}
