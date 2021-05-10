@@ -47,7 +47,7 @@ int main(void) {
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();
-//	music_start();
+	music_start();
 
 	while (1) {
 		/*
