@@ -24,7 +24,7 @@ static THD_FUNCTION(music_thd, arg) {
 //		chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
 //				get_barcode_number());
 
-		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 80) {
+		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 80 && !confirmFlag) {
 			confirmFlag = true;
 		} else if (confirmFlag) {
 
