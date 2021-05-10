@@ -12,9 +12,9 @@
 #include <mapping.h>
 
 #define KP 0.1
-#define KI 0.001//.00008//.001
+#define KI 0.0018//.00008//.001
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 50
+#define THRESHOLD_ERR 30
 
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
@@ -22,8 +22,13 @@
 #define IR_THRESHOLD_1 130
 #define IR_THRESHOLD_2 150
 
+//#define IR_THRESHOLD_UNI 270
+
 #define LATERAL_REGULATOR_PERIOD 20
-#define FRONTAL_REGULATOR_PERIOD 80
+#define FRONTAL_REGULATOR_PERIOD 60
+
+static int last_IR_l = 0;
+static int last_IR_r = 0;
 
 static THD_WORKING_AREA(lateral_regulator_thd_wa, 8192);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
@@ -44,18 +49,30 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 //		err = rightIR - leftIR;
 //		integ += err;
-		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
+//		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
 
 		err = rightIR - leftIR;
 		integ += err;
 
 		if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD_1
-				|| get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1
-				|| get_TOFIR_values().TOF_dist < 120) {
-//			chprintf((BaseSequentialStream *) &SD3, "Set to 0!!! \r\n");
+				|| get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1 || get_TOFIR_values().TOF_dist < 140) {
 			err = 0;
 			integ = 0;
 		}
+//		else if (leftIR < IR_THRESHOLD_1 /*&& get_TOFIR_values().TOF_dist < 150*/) {
+//			chprintf((BaseSequentialStream *) &SD3, "Last L %d \r\n",
+//					last_IR_l);
+//			err = (last_IR_l - get_TOFIR_values().IR_l_prox);
+//			integ += err;
+//		} else if (rightIR < IR_THRESHOLD_1 /*&& get_TOFIR_values().TOF_dist < 150*/) {
+//			chprintf((BaseSequentialStream *) &SD3, "Last R %d \r\n",
+//					last_IR_r);
+//			err = -(last_IR_r - get_TOFIR_values().IR_r_prox);
+//			integ += err;
+//		} else {
+//			last_IR_l = get_TOFIR_values().IR_l_prox;
+//			last_IR_r = get_TOFIR_values().IR_r_prox;
+//		}
 
 //		else {
 //		}
@@ -109,6 +126,8 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 			call_blinker(dir);
 			set_turn(dir);
 			motor_turn(dir, 90);
+			last_IR_l = get_TOFIR_values().IR_l_prox;
+			last_IR_r = get_TOFIR_values().IR_r_prox;
 			motor_straight();
 //		}
 		}
