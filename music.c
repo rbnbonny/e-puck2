@@ -9,6 +9,8 @@
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
 
+#include <leds.h>
+
 static THD_WORKING_AREA(music_thd_wa, 8192);
 static THD_FUNCTION(music_thd, arg) {
 	(void) arg;
@@ -21,47 +23,52 @@ static THD_FUNCTION(music_thd, arg) {
 	playMelodyStart();
 
 	while (1) {
-//		chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
-//				get_barcode_number());
 
-		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 80 && !confirmFlag) {
+		if (get_barcode_number() > 0 /*&& get_TOFIR_values().TOF_dist < 80*/
+		&& !confirmFlag) {
 			confirmFlag = true;
-		} else if (confirmFlag) {
+		} else if (confirmFlag && get_barcode_number() > 0) {
+			chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
+					get_barcode_number());
 
-			switch (get_barcode_number()) {
-			case 1:
-				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
-				break;
-			case 2:
-				playMelody(WE_ARE_THE_CHAMPIONS, ML_FORCE_CHANGE, NULL);
-				break;
-			case 3:
-				playMelody(RUSSIA, ML_FORCE_CHANGE, NULL);
-				break;
-			case 4:
-				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
-				break;
-			case 5:
-				playMelody(UNDERWORLD, ML_FORCE_CHANGE, NULL);
-				break;
-			case 6:
-				playMelody(WALKING, ML_FORCE_CHANGE, NULL);
-				break;
-			case 7:
-				playMelody(PIRATES_OF_THE_CARIBBEAN, ML_FORCE_CHANGE, NULL);
-				break;
-			case 8:
-				playMelody(SIMPSON, ML_FORCE_CHANGE, NULL);
-				break;
-			case 9:
-				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
-				break;
-			default:
-				break;
-				confirmFlag = false;
-			}
+			set_led(LED1, 1);
+			chThdSleepMilliseconds(100);
+			set_led(LED1, 0);
+
+//			switch (get_barcode_number()) {
+//			case 1:
+//				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 2:
+//				playMelody(WE_ARE_THE_CHAMPIONS, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 3:
+//				playMelody(RUSSIA, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 4:
+//				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 5:
+//				playMelody(UNDERWORLD, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 6:
+//				playMelody(WALKING, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 7:
+//				playMelody(PIRATES_OF_THE_CARIBBEAN, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 8:
+//				playMelody(SIMPSON, ML_FORCE_CHANGE, NULL);
+//				break;
+//			case 9:
+//				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
+//				break;
+//			default:
+//				break;
+			confirmFlag = false;
+			//}
 		}
-		chThdSleepMilliseconds(100);
+		chThdSleepMilliseconds(200);
 	}
 }
 

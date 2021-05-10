@@ -8,6 +8,7 @@
 #include <usbcfg.h>
 #include <main.h>
 #include <motors.h>
+#include <leds.h>
 #include <chprintf.h>
 
 #include "obstacle_detection.h"
@@ -46,8 +47,11 @@ int main(void) {
 	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
-	mapping_start();
+//	mapping_start();
 	music_start();
+
+//	set_body_led(1);
+
 
 	while (1) {
 		/*

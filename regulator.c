@@ -11,15 +11,15 @@
 #include <motors.h>
 #include <mapping.h>
 
-#define KP 0.2
-#define KI 0.0001//.00008//.001
+#define KP 0.1
+#define KI 0.001//.00008//.001
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 0
+#define THRESHOLD_ERR 50
 
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD_1 120
+#define IR_THRESHOLD_1 130
 #define IR_THRESHOLD_2 150
 
 #define LATERAL_REGULATOR_PERIOD 20
@@ -44,7 +44,7 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 //		err = rightIR - leftIR;
 //		integ += err;
-//		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
+		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
 
 		err = rightIR - leftIR;
 		integ += err;
@@ -142,8 +142,8 @@ void frontal_regulator_start(void) {
 
 direction determine90(void) {
 	direction dir;
-	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
-			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
+//	chprintf((BaseSequentialStream *) &SD3, "LEFT IR %d   RIGHT IR %d \r\n",
+//			get_TOFIR_values().IR_l_prox, get_TOFIR_values().IR_r_prox);
 	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD_2) {
 		dir = LEFT;
 	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD_2) {

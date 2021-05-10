@@ -13,6 +13,15 @@ static BSEMAPHORE_DECL(image_ready_sem, TRUE);
 
 uint8_t barcode_number = 0;
 
+void SendUint8ToComputer(uint8_t* data, uint16_t size) {
+	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )"START",
+			5);
+	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )&size,
+			sizeof(uint16_t));
+	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )data,
+			size);
+}
+
 static THD_WORKING_AREA(waCaptureImage, 256);
 static THD_FUNCTION(CaptureImage, arg) {
 
@@ -20,7 +29,7 @@ static THD_FUNCTION(CaptureImage, arg) {
 	(void) arg;
 
 	//Takes pixels 0 to IMAGE_BUFFER_SIZE of the line 10 + 11 (minimum 2 lines because reasons)
-	po8030_advanced_config(FORMAT_RGB565, 0, 10, IMAGE_BUFFER_SIZE, 2,
+	po8030_advanced_config(FORMAT_RGB565, 0, 300, IMAGE_BUFFER_SIZE, 2,
 			SUBSAMPLING_X1, SUBSAMPLING_X1);
 	dcmi_enable_double_buffering();
 	dcmi_set_capture_mode(CAPTURE_ONE_SHOT);
@@ -34,6 +43,7 @@ static THD_FUNCTION(CaptureImage, arg) {
 		//signals an image has been captured
 		chBSemSignal(&image_ready_sem);
 		//chprintf((BaseSequentialStream *)&SDU1, "time=%d \r\n", time2-time1);
+
 	}
 }
 
@@ -45,7 +55,6 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 	uint8_t *img_buff_ptr;
 	uint8_t image[IMAGE_BUFFER_SIZE] = { 0 };
-
 
 	while (1) {
 
@@ -61,9 +70,13 @@ static THD_FUNCTION(ProcessImage, arg) {
 			img_buff_ptr++;
 			b = *img_buff_ptr; //low byte
 			img_buff_ptr++;
+
+
 			image[i] = ((a & 0x07) << 3) | ((b & 0xE0) >> 5);
+//			image[i] = ((a & 0xF8) >> 3);
 		}
 
+//		SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
 		binary_image(image);
 		barcode_number = edge_detection(image);
 //		chprintf((BaseSequentialStream *) &SD3, "barcode = %d\r\n",
