@@ -14,6 +14,7 @@
 #include "motor_control.h"
 #include "regulator.h"
 #include "process_image.h"
+#include "mapping.h"
 #include "music.h"
 
 static void serial_start(void) {
@@ -40,12 +41,13 @@ int main(void) {
 	process_image_start();
 	obstacle_detection_start();
 
-	chThdSleepMilliseconds(1000);
+	chThdSleepMilliseconds(1500);
 
 	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
-	music_start();
+	mapping_start();
+//	music_start();
 
 	while (1) {
 		/*

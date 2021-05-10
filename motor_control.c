@@ -8,8 +8,6 @@
 #include <motor_control.h>
 #include <motors.h>
 
-#define WHEEL_D 41 //mm
-#define WHEEL_STEP 1000 //number of steps per rotation
 
 uint16_t motor_turn_step(uint16_t angle) {
 
@@ -59,3 +57,13 @@ void motor_straight(void) {
 	left_motor_set_speed(MOTORSPEED);
 	right_motor_set_speed(MOTORSPEED);
 }
+
+//uint8_t get_dir(void){
+//	if(turn_flag){
+//		turn_flag = 0;
+//		return dir; //muss noch irgendwo her geholt werden
+//	}
+//	else
+//		return 0; //something which says that it doesn't turn
+//}
+

@@ -68,7 +68,7 @@ static THD_FUNCTION(ProcessImage, arg) {
 		barcode_number = edge_detection(image);
 //		chprintf((BaseSequentialStream *) &SD3, "barcode = %d\r\n",
 //				barcode_number);
-//		chThdSleepMilliseconds(50);
+		chThdSleepMilliseconds(50);
 	}
 }
 
