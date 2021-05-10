@@ -11,6 +11,8 @@
 #include <motors.h>
 #include <mapping.h>
 
+#include <leds.h>
+
 #define KP 0.1
 #define KI 0.0018//.00008//.001
 #define DIFFSPEED 5
@@ -19,7 +21,7 @@
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD_1 130
+#define IR_THRESHOLD_1 120
 #define IR_THRESHOLD_2 150
 
 //#define IR_THRESHOLD_UNI 270
@@ -41,6 +43,8 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 	int leftIR = 0;
 	int32_t integ = 0;
 
+	static uint8_t controller_mode = 0;
+
 	while (1) {
 		time = chVTGetSystemTime();
 		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_rf_prox)
@@ -51,14 +55,47 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 //		integ += err;
 //		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
 
-		err = rightIR - leftIR;
-		integ += err;
+		if (get_TOFIR_values().TOF_dist
+				< 150|| leftIR < IR_THRESHOLD_1 || rightIR < IR_THRESHOLD_1) {
+//			err = 0;
+//			integ = 0;
+			controller_mode = 1;
+		} else if (leftIR > IR_THRESHOLD_1 && rightIR > IR_THRESHOLD_1) {
+//			err = 0;
+//			integ = 0;
+			controller_mode = 0;
+		}
 
-		if (get_TOFIR_values().IR_r_prox < IR_THRESHOLD_1
-				|| get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1 || get_TOFIR_values().TOF_dist < 140) {
+		switch (controller_mode) {
+		case 0:
+			err = rightIR - leftIR;
+			integ += err;
+			last_IR_l = get_TOFIR_values().IR_l_prox;
+			last_IR_r = get_TOFIR_values().IR_r_prox;
+			set_led(LED5, 1);
+			set_led(LED1, 0);
+			break;
+		case 1:
+			if (leftIR < IR_THRESHOLD_1) {
+				err = (last_IR_r - get_TOFIR_values().IR_r_prox) / 2;
+				integ = 0;
+//					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
+			} else if (rightIR < IR_THRESHOLD_1) {
+				err = (last_IR_l - get_TOFIR_values().IR_l_prox) / 2;
+				integ = 0;
+//					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
+			}
+			set_led(LED5, 0);
+			set_led(LED1, 1);
+			break;
+		case 2:
 			err = 0;
 			integ = 0;
+			break;
+		default:
+			break;
 		}
+
 //		else if (leftIR < IR_THRESHOLD_1 /*&& get_TOFIR_values().TOF_dist < 150*/) {
 //			chprintf((BaseSequentialStream *) &SD3, "Last L %d \r\n",
 //					last_IR_l);
@@ -70,8 +107,6 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 //			err = -(last_IR_r - get_TOFIR_values().IR_r_prox);
 //			integ += err;
 //		} else {
-//			last_IR_l = get_TOFIR_values().IR_l_prox;
-//			last_IR_r = get_TOFIR_values().IR_r_prox;
 //		}
 
 //		else {
