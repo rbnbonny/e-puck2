@@ -36,12 +36,16 @@ int main(void) {
     dcmi_start();
 	po8030_start();
 
+
 	process_image_start();
 	obstacle_detection_start();
+
+	chThdSleepMilliseconds(1000);
+
+	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
 	music_start();
-	motor_straight();
 
 	while (1) {
 		/*
