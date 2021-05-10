@@ -29,7 +29,6 @@ int32_t mm_to_step(int dis, int tolerance) {
 }
 
 void set_compass(galileo *compass, direction dir) {
-	//chprintf((BaseSequentialStream *) &SD3, "direction = %d \r\n", dir);
 	galileo comp = *compass;
 	comp += dir;
 	if (comp == 4)
@@ -37,8 +36,6 @@ void set_compass(galileo *compass, direction dir) {
 	if (comp == 255)
 		comp = 3;
 	*compass = comp;
-	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", *compass);
-
 }
 
 void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
@@ -53,13 +50,11 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	arr_map[i][j].dir = compass;
 	arr_map[i][j].conquest = 1;
 
+	map_draw(i, j);
+
 	counter++;
 	if (counter >= 25)
 		counter = 0;
-
-	//chprintf((BaseSequentialStream *) &SD3, "counter = %d \r\n", counter);
-	//chprintf((BaseSequentialStream *) &SD3, "Y = %d \t X = %d \r\n", i, j);
-	//chprintf((BaseSequentialStream *) &SD3, "compass = %d \r\n", compass);
 
 	switch (compass) {
 	case NORTH:
@@ -124,83 +119,47 @@ void map_print(void) {
 
 }
 
-void map_draw() {
-	for(uint8_t i = 0; i < 11; i++){
-		for(uint8_t j = 0; j < 11; j++){
-			general_map[i][j] = NOTHING;
-		}
-	}
+void map_draw(uint8_t i, uint8_t j) {
 
-	for (uint8_t i = 0; i < 5; i++) {
-		for (uint8_t j = 0; j < 5; j++) {
-			if (arr_map[i][j].conquest == 1) {
-				general_map[2 * i + 1][2 * j + 1] = ROBOT;
-				switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
-				case NORTH:
-					for (uint8_t k = 2 * j; k < 2 * j + 3; k++)
-						general_map[2 * i + 2][k] = map_draw_f_wall(i, j); //2*j+1
-					for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
-						general_map[k][2 * j] = map_draw_l_wall(i, j); //2*i+1
-						general_map[k][2 * j + 2] = map_draw_r_wall(i, j); //2*i+1
-					}
-					break;
-				case EAST:
-					for (uint8_t k = 2 * i; k < 2 * i + 3; k++)
-						general_map[k][2 * j + 2] = map_draw_f_wall(i, j);
-					for (uint8_t k = 2 * j; k < 2 * j * 3; k++) {
-						general_map[2 * i + 2][k] = map_draw_l_wall(i, j);
-						general_map[2 * i][k] = map_draw_r_wall(i, j);
-					}
-					break;
-				case SOUTH:
-					for (uint8_t k = 2 * j; k < 2 * j + 3; k++)
-						general_map[2 * i][k] = map_draw_f_wall(i, j);
-					for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
-						general_map[k][2 * j + 2] = map_draw_l_wall(i, j);
-						general_map[k][2 * j] = map_draw_r_wall(i, j);
-					}
-					break;
-				case WEST:
-					for (uint8_t k = 2 * i; k < 2 * i + 3; k++)
-						general_map[k][2 * j] = map_draw_f_wall(i, j);
-					for (uint8_t k = 2 * j; k < 2 * j * 3; k++) {
-						general_map[2 * i][k] = map_draw_l_wall(i, j);
-						general_map[2 * i + 2][k] = map_draw_r_wall(i, j);
-					}
-					break;
-				}
-			}
+	general_map[2 * i + 1][2 * j + 1] = ROBOT;
+	switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
+	case NORTH:
+		for (uint8_t k = 2 * j; k < 2 * j + 3; k++) {
+			general_map[2 * i + 2][k] = map_draw_f_wall(i, j); //2*j+1
 		}
-	}
-	for (uint8_t i = 0; i < 11; i++) {
-		general_map[i][0] = WALL;
-		general_map[i][10] = WALL;
-	}
-	for (uint8_t j = 0; j < 11; j++) {
-		general_map[0][j] = WALL;
-		general_map[10][j] = WALL;
-	}
-
-
-	for (uint8_t i = 1; i < 8; i += 2) {
-		for (uint8_t j = 2; j < 9; j += 2) {
-			if (general_map[i][j] == WALL) {
-				if (general_map[i + 2][j] == WALL
-						&& general_map[i + 1][j] == NOTHING)
-					general_map[i + 1][j] = WALL;
-				if (general_map[i][j + 2] == WALL
-						&& general_map[i][j + 1] == NOTHING)
-					general_map[i][j + 1] = WALL;
-				if (general_map[i - 2][j] == WALL
-						&& general_map[i - 1][j] == NOTHING)
-					general_map[i - 1][j] = WALL;
-				if (general_map[i][j - 2] == WALL
-						&& general_map[i][j - 1] == NOTHING)
-					general_map[i][j - 1] = WALL;
-			}
+		for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+			general_map[k][2 * j] = map_draw_l_wall(i, j); //2*i+1
+			general_map[k][2 * j + 2] = map_draw_r_wall(i, j); //2*i+1
 		}
+		break;
+	case EAST:
+		for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+			general_map[k][2 * j + 2] = map_draw_f_wall(i, j);
+		}
+		for (uint8_t k = 2 * j; k < 2 * j + 3; k++) {
+			general_map[2 * i + 2][k] = map_draw_l_wall(i, j);
+			general_map[2 * i][k] = map_draw_r_wall(i, j);
+		}
+		break;
+	case SOUTH:
+		for (uint8_t k = 2 * j; k < 2 * j + 3; k++) {
+			general_map[2 * i][k] = map_draw_f_wall(i, j);
+		}
+		for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+			general_map[k][2 * j + 2] = map_draw_l_wall(i, j);
+			general_map[k][2 * j] = map_draw_r_wall(i, j);
+		}
+		break;
+	case WEST:
+		for (uint8_t k = 2 * i; k < 2 * i + 3; k++) {
+			general_map[k][2 * j] = map_draw_f_wall(i, j);
+		}
+		for (uint8_t k = 2 * j; k < 2 * j + 3; k++) {
+			general_map[2 * i][k] = map_draw_l_wall(i, j);
+			general_map[2 * i + 2][k] = map_draw_r_wall(i, j);
+		}
+		break;
 	}
-	chprintf((BaseSequentialStream *) &SD3, "%d \r\n", general_map[4][2]);
 
 	map_print();
 }
@@ -236,7 +195,6 @@ static THD_FUNCTION(Mapping_Value, arg) {
 				r_motor_pos_origin = right_motor_get_pos();
 				l_motor_pos_origin = left_motor_get_pos();
 				compass_old = compass;
-				map_draw();
 			}
 
 			break;
@@ -247,7 +205,6 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			l_motor_pos_origin = left_motor_get_pos();
 			compass_old = compass;
 			turn_flag = STRAIGHT;
-			map_draw();
 			break;
 		case RIGHT:
 			set_compass(&compass, turn_flag);
@@ -256,7 +213,6 @@ static THD_FUNCTION(Mapping_Value, arg) {
 			l_motor_pos_origin = left_motor_get_pos();
 			compass_old = compass;
 			turn_flag = STRAIGHT;
-			map_draw();
 			break;
 		default:
 			break;
