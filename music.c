@@ -11,6 +11,7 @@
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
 
+static bool partyMusic = false;
 
 static THD_WORKING_AREA(music_thd_wa, 8192);
 static THD_FUNCTION(music_thd, arg) {
@@ -28,8 +29,8 @@ static THD_FUNCTION(music_thd, arg) {
 
 	while (1) {
 		barcode_num = get_barcode_number();
-		if (barcode_num > 0 && get_TOFIR_values().TOF_dist < 140
-		&& confirm < 3 && barcode_num != last_code) {
+		if (barcode_num > 0 && get_TOFIR_values().TOF_dist < 140 && confirm < 3
+				&& barcode_num != last_code) {
 			confirm++;
 		} else if (confirm >= 3 && barcode_num > 0) {
 //			chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
@@ -73,6 +74,10 @@ static THD_FUNCTION(music_thd, arg) {
 			last_code = barcode_num;
 			confirm = 0;
 		}
+		if (partyMusic) {
+			playMelody(MARIO_FLAG, ML_FORCE_CHANGE, NULL);
+			partyMusic = false;
+		}
 		chThdSleepMilliseconds(200);
 	}
 }
@@ -80,4 +85,8 @@ static THD_FUNCTION(music_thd, arg) {
 void music_start(void) {
 	chThdCreateStatic(music_thd_wa, sizeof(music_thd_wa),
 	NORMALPRIO, music_thd, NULL);
+}
+
+void party_music(void){
+	partyMusic = true;
 }

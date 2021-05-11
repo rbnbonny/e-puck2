@@ -58,6 +58,11 @@ void motor_straight(void) {
 	right_motor_set_speed(MOTORSPEED);
 }
 
+void motor_stopp(void) {
+	left_motor_set_speed(0);
+	right_motor_set_speed(0);
+}
+
 //uint8_t get_dir(void){
 //	if(turn_flag){
 //		turn_flag = 0;

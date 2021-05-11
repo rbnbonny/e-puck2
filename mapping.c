@@ -7,6 +7,8 @@
 #include <mapping.h>
 #include <motors.h>
 #include <blinker.h>
+#include <music.h>
+#include <motor_control.h>
 #include <math.h>
 
 #define SQUARE_SIDE 124
@@ -164,7 +166,10 @@ void map_draw(uint8_t i, uint8_t j) {
 
 	map_print();
 	if(i==0 && j==0){
+		motor_stop();
 		party_blinker();
+		party_music();
+		motor_straight();
 	}
 }
 

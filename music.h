@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 void music_start(void);
+void party_music(void);
 
 #ifdef __cplusplus
 }
