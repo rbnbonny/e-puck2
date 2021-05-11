@@ -6,6 +6,7 @@
 #include <obstacle_detection.h>
 #include <mapping.h>
 #include <motors.h>
+#include <blinker.h>
 #include <math.h>
 
 #define SQUARE_SIDE 124
@@ -162,6 +163,9 @@ void map_draw(uint8_t i, uint8_t j) {
 	}
 
 	map_print();
+	if(i==0 && j==0){
+		party_blinker();
+	}
 }
 
 static THD_WORKING_AREA(Mapping_Value_wa, 4096);

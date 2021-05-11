@@ -9,6 +9,8 @@ extern "C" {
 
 void blinker_start(void);
 void call_blinker(direction, uint8_t);
+void blinker(direction);
+void party_blinker(void);
 
 #ifdef __cplusplus
 }
