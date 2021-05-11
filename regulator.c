@@ -13,15 +13,19 @@
 
 #include <leds.h>
 
-#define KP 0.1
-#define KI 0.0018//.00008//.001
+#define KP 0.9//1.2
+#define KI 0.3//0.3//0.2//0.0018//.00008//.001
+
+
 #define DIFFSPEED 5
-#define THRESHOLD_ERR 30
+#define THRESHOLD_ERR 5
+
+#define WINDUP 100
 
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD_1 120
+#define IR_THRESHOLD_1 100
 #define IR_THRESHOLD_2 150
 
 //#define IR_THRESHOLD_UNI 270
@@ -51,50 +55,61 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 				/ 2;
 		leftIR = (get_TOFIR_values().IR_l_prox + get_TOFIR_values().IR_lf_prox)
 				/ 2;
-//		err = rightIR - leftIR;
-//		integ += err;
-//		chprintf((BaseSequentialStream *)&SD3, "Integ %d \r\n", integ);
+		err = rightIR - leftIR;
+		integ += err;
+
+		if (integ > WINDUP)
+			integ = WINDUP;
+		if (integ < -WINDUP)
+			integ = -WINDUP;
+		if (err > WINDUP)
+			err = WINDUP;
+		if (err < -WINDUP)
+			err = -WINDUP;
+
+//		chprintf((BaseSequentialStream *) &SD3, "Integ %d ", integ);
+//		chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
 
 		if (get_TOFIR_values().TOF_dist
-				< 150|| leftIR < IR_THRESHOLD_1 || rightIR < IR_THRESHOLD_1) {
-//			err = 0;
-//			integ = 0;
-			controller_mode = 1;
-		} else if (leftIR > IR_THRESHOLD_1 && rightIR > IR_THRESHOLD_1) {
-//			err = 0;
-//			integ = 0;
-			controller_mode = 0;
-		}
-
-		switch (controller_mode) {
-		case 0:
-			err = rightIR - leftIR;
-			integ += err;
-			last_IR_l = get_TOFIR_values().IR_l_prox;
-			last_IR_r = get_TOFIR_values().IR_r_prox;
-			set_led(LED5, 1);
-			set_led(LED1, 0);
-			break;
-		case 1:
-			if (leftIR < IR_THRESHOLD_1) {
-				err = (last_IR_r - get_TOFIR_values().IR_r_prox) / 2;
-				integ = 0;
-//					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
-			} else if (rightIR < IR_THRESHOLD_1) {
-				err = (last_IR_l - get_TOFIR_values().IR_l_prox) / 2;
-				integ = 0;
-//					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
-			}
-			set_led(LED5, 0);
-			set_led(LED1, 1);
-			break;
-		case 2:
+				< 160 || get_TOFIR_values().IR_r_prox < IR_THRESHOLD_1 || get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1) {
 			err = 0;
 			integ = 0;
-			break;
-		default:
-			break;
+//			controller_mode = 1;
+//		} else if (leftIR > IR_THRESHOLD_1 && rightIR > IR_THRESHOLD_1) {
+////			err = 0;
+////			integ = 0;
+//			controller_mode = 0;
 		}
+
+//		switch (controller_mode) {
+//		case 0:
+//			err = rightIR - leftIR;
+//			integ += err;
+//			last_IR_l = get_TOFIR_values().IR_l_prox;
+//			last_IR_r = get_TOFIR_values().IR_r_prox;
+//			set_led(LED5, 1);
+//			set_led(LED1, 0);
+//			break;
+//		case 1:
+//			if (leftIR < IR_THRESHOLD_1) {
+//				err = (last_IR_r - get_TOFIR_values().IR_r_prox) / 2;
+//				integ = 0;
+////					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
+//			} else if (rightIR < IR_THRESHOLD_1) {
+//				err = (last_IR_l - get_TOFIR_values().IR_l_prox) / 2;
+//				integ = 0;
+////					chprintf((BaseSequentialStream *) &SD3, "Error %d \r\n", err);
+//			}
+//			set_led(LED5, 0);
+//			set_led(LED1, 1);
+//			break;
+//		case 2:
+//			err = 0;
+//			integ = 0;
+//			break;
+//		default:
+//			break;
+//		}
 
 //		else if (leftIR < IR_THRESHOLD_1 /*&& get_TOFIR_values().TOF_dist < 150*/) {
 //			chprintf((BaseSequentialStream *) &SD3, "Last L %d \r\n",
@@ -161,6 +176,7 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 			call_blinker(dir);
 			set_turn(dir);
 			motor_turn(dir, 90);
+			chprintf((BaseSequentialStream *) &SD3, "       HALT \r\n");
 			last_IR_l = get_TOFIR_values().IR_l_prox;
 			last_IR_r = get_TOFIR_values().IR_r_prox;
 			motor_straight();

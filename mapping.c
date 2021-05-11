@@ -110,7 +110,7 @@ void map_print(void) {
 				chprintf((BaseSequentialStream *) &SD3, "X");
 				break;
 			case EMPTY:
-				chprintf((BaseSequentialStream *) &SD3, "o");
+				chprintf((BaseSequentialStream *) &SD3, " ");
 				break;
 			}
 		}

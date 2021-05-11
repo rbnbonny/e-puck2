@@ -24,12 +24,12 @@ static THD_FUNCTION(music_thd, arg) {
 
 	while (1) {
 
-		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 100
-		&& confirm < 2) {
+		if (get_barcode_number() > 0 && get_TOFIR_values().TOF_dist < 140
+		&& confirm < 3) {
 			confirm++;
-		} else if (confirm >= 2 && get_barcode_number() > 0) {
-			chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
-					get_barcode_number());
+		} else if (confirm >= 3 && get_barcode_number() > 0) {
+//			chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
+//					get_barcode_number());
 
 			set_led(LED1, 1);
 			chThdSleepMilliseconds(100);

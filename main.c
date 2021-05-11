@@ -40,14 +40,17 @@ int main(void) {
 
 
 	process_image_start();
-	obstacle_detection_start();
 
-	chThdSleepMilliseconds(1500);
+	chThdSleepMilliseconds(2000);
+
+	obstacle_detection_start();
+	chThdSleepMilliseconds(500);
+
 
 	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
-//	mapping_start();
+	mapping_start();
 	music_start();
 
 //	set_body_led(1);
