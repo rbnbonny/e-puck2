@@ -46,15 +46,11 @@ int main(void) {
 	obstacle_detection_start();
 	chThdSleepMilliseconds(500);
 
-
-	motor_straight();
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();
 	music_start();
-
-//	set_body_led(1);
-
+	motor_straight();
 
 	while (1) {
 		/*

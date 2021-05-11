@@ -21,7 +21,6 @@ static THD_FUNCTION(music_thd, arg) {
 	static uint8_t confirm = 0;
 
 	dac_start();
-//	dac_power_speaker(true);
 	playMelodyStart();
 
 	uint8_t barcode_num;
@@ -87,6 +86,6 @@ void music_start(void) {
 	NORMALPRIO, music_thd, NULL);
 }
 
-void party_music(void){
+void party_music(void) {
 	partyMusic = true;
 }

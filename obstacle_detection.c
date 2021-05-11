@@ -7,8 +7,6 @@
 #include "sensors/proximity.h"
 #include "sensors/VL53L0X/VL53L0X.h"
 
-//#define PRINT_VALUES
-
 #define TOF_SAMPLING_WAIT 120
 #define IR_SAMPLING_WAIT 80
 
@@ -55,26 +53,6 @@ static THD_FUNCTION(IRsensor_thd, arg) {
 	}
 }
 
-static THD_WORKING_AREA(obstacle_detec_thd_wa, 256);
-static THD_FUNCTION(obstacle_detec_thd, arg) {
-	(void) arg;
-	chRegSetThreadName(__FUNCTION__);
-
-	while (1) {
-
-#ifdef PRINT_VALUES
-		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
-				TOFIR_values.TOF_dist);
-		chprintf((BaseSequentialStream *) &SD3,
-				"IR Levels: R%d RF%d L%d LF%d \r\n", TOFIR_values.IR_r_prox,
-				TOFIR_values.IR_rf_prox, TOFIR_values.IR_l_prox,
-				TOFIR_values.IR_lf_prox);
-#endif
-		chThdSleepMilliseconds(500);
-	}
-
-}
-
 void obstacle_detection_start(void) {
 
 	messagebus_init(&bus, &bus_lock, &bus_condvar);
@@ -87,9 +65,6 @@ void obstacle_detection_start(void) {
 
 	chThdCreateStatic(IRsensor_thd_wa, sizeof(IRsensor_thd_wa),
 	NORMALPRIO, IRsensor_thd, NULL);
-
-	chThdCreateStatic(obstacle_detec_thd_wa, sizeof(obstacle_detec_thd_wa),
-	NORMALPRIO, obstacle_detec_thd, NULL);
 }
 
 TOFIR_msg_t get_TOFIR_values(void) {

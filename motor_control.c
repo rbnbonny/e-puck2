@@ -8,7 +8,6 @@
 #include <motor_control.h>
 #include <motors.h>
 
-
 uint16_t motor_turn_step(uint16_t angle) {
 
 	float relative_turn = 0;
@@ -39,7 +38,6 @@ void motor_turn(direction dir, uint16_t angle) {
 	}
 
 	while (1) {
-		//chprintf((BaseSequentialStream*)&SD3, "pos_diff = %d\r\n", right_motor_get_pos()-pos_right);
 		if (right_motor_get_pos() - pos_right > wheel_steps) {
 			right_motor_set_speed(0);
 			left_motor_set_speed(0);
@@ -62,13 +60,3 @@ void motor_stopp(void) {
 	left_motor_set_speed(0);
 	right_motor_set_speed(0);
 }
-
-//uint8_t get_dir(void){
-//	if(turn_flag){
-//		turn_flag = 0;
-//		return dir; //muss noch irgendwo her geholt werden
-//	}
-//	else
-//		return 0; //something which says that it doesn't turn
-//}
-
