@@ -7,8 +7,10 @@
 
 static bool leftBlinker = false;
 static bool rightBlinker = false;
+static bool frontBlinker = false;
+static uint8_t repeat = 0;
 
-void blinker(direction dir);
+void blinker(direction);
 
 static THD_WORKING_AREA(blinker_thd_wa, 256);
 static THD_FUNCTION(blinker_thd, arg) {
@@ -16,20 +18,24 @@ static THD_FUNCTION(blinker_thd, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	while (1) {
-		if(leftBlinker){
+		if (leftBlinker) {
 			blinker(LEFT);
 			leftBlinker = false;
 		}
-		if(rightBlinker){
+		if (rightBlinker) {
 			blinker(RIGHT);
 			rightBlinker = false;
+		}
+		if (frontBlinker) {
+			blinker(STRAIGHT);
+			frontBlinker = false;
 		}
 		chThdSleepMilliseconds(50);
 	}
 }
 
 void blinker(direction dir) {
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < repeat; i++) {
 
 		switch (dir) {
 		case LEFT:
@@ -37,6 +43,9 @@ void blinker(direction dir) {
 			break;
 		case RIGHT:
 			set_led(LED3, 1);
+			break;
+		case STRAIGHT:
+			set_led(LED1, 1);
 			break;
 		default:
 			break;
@@ -47,17 +56,21 @@ void blinker(direction dir) {
 	}
 }
 
-void call_blinker(direction dir){
+void call_blinker(direction dir, uint8_t ext_repeat) {
 	switch (dir) {
-		case LEFT:
-			leftBlinker = true;
-			break;
-		case RIGHT:
-			rightBlinker = true;
-			break;
-		default:
-			break;
+	case LEFT:
+		leftBlinker = true;
+		break;
+	case RIGHT:
+		rightBlinker = true;
+		break;
+	case STRAIGHT:
+		frontBlinker = true;
+		break;
+	default:
+		break;
 	}
+	repeat = ext_repeat;
 }
 
 void blinker_start(void) {

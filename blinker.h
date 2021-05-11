@@ -8,7 +8,7 @@ extern "C" {
 #include <motor_control.h>
 
 void blinker_start(void);
-void call_blinker(direction);
+void call_blinker(direction, uint8_t);
 
 #ifdef __cplusplus
 }

@@ -114,7 +114,7 @@ void map_print(void) {
 				break;
 			}
 		}
-		chprintf((BaseSequentialStream *) &SD3, "\r\n");
+		chprintf((BaseSequentialStream *) &SD3, "\r\n\r\n");
 	}
 
 }

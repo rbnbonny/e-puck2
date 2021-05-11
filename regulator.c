@@ -173,12 +173,11 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 //				motor_straight();
 //			} else {
 			dir = determine90();
-			call_blinker(dir);
+			call_blinker(dir, 3);
 			set_turn(dir);
 			motor_turn(dir, 90);
-			chprintf((BaseSequentialStream *) &SD3, "       HALT \r\n");
-			last_IR_l = get_TOFIR_values().IR_l_prox;
-			last_IR_r = get_TOFIR_values().IR_r_prox;
+//			last_IR_l = get_TOFIR_values().IR_l_prox;
+//			last_IR_r = get_TOFIR_values().IR_r_prox;
 			motor_straight();
 //		}
 		}
