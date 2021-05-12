@@ -42,8 +42,6 @@ static THD_FUNCTION(CaptureImage, arg) {
 		wait_image_ready();
 		//signals an image has been captured
 		chBSemSignal(&image_ready_sem);
-		//chprintf((BaseSequentialStream *)&SDU1, "time=%d \r\n", time2-time1);
-
 	}
 }
 
@@ -62,6 +60,7 @@ static THD_FUNCTION(ProcessImage, arg) {
 		chBSemWait(&image_ready_sem);
 		//gets the pointer to the array filled with the last image in RGB565
 		img_buff_ptr = dcmi_get_last_image_ptr();
+		//transfers the green image bits into the image array
 		uint8_t a, b;
 		for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
 			a = 0;
@@ -70,23 +69,26 @@ static THD_FUNCTION(ProcessImage, arg) {
 			img_buff_ptr++;
 			b = *img_buff_ptr; //low byte
 			img_buff_ptr++;
-
-
 			image[i] = ((a & 0x07) << 3) | ((b & 0xE0) >> 5);
-//			image[i] = ((a & 0xF8) >> 3);
 		}
 
-//		SendUint8ToComputer(image, IMAGE_BUFFER_SIZE);
+		//converts the image into a binary image
 		binary_image(image);
+		//coverts the image into a decimal number
 		barcode_number = edge_detection(image);
-//		chprintf((BaseSequentialStream *) &SD3, "barcode = %d\r\n",
-//				barcode_number);
 		chThdSleepMilliseconds(50);
 	}
 }
 
+
+/**
+* @brief   			converts the image into a binary image
+*
+* @param[in] image		array containing one line of the captured image
+*/
 void binary_image(uint8_t* image) {
 
+	//takes the mean over all image points
 	uint16_t mean = 0;
 	for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
 		mean += image[i];
@@ -96,40 +98,53 @@ void binary_image(uint8_t* image) {
 	static uint8_t image_prev[IMAGE_BUFFER_SIZE] = { 0 };
 	static uint8_t image_buf[IMAGE_BUFFER_SIZE] = { 0 };
 
+	//takes the root mean square value of the current and previous image to avoid fluctuations
 	for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
 		image_buf[i] = image[i];
 		image[i] = sqrt(image[i] * image[i] + image_prev[i] * image_prev[i]);
 		image_prev[i] = image_buf[i];
 	}
 
-	// Binning using mean intensity of image
+	//binning using mean intensity of image
 	for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
 		if (image[i] < mean)
 			image[i] = 0;
 		else
 			image[i] = 1;
 	}
+
+	//corrects vignetting effects
 	binary_correction(image);
 }
 
+/**
+* @brief   			corrects vignetting effects
+*
+* @param[in] image		array containing one line of the captured image in binary form
+*/
 void binary_correction(uint8_t* image) {
 
+	/* goes from the left border towards the middle and checks if the next 5 consecutive points are 1.
+	* if they aren't, it puts the current point to 1 and corrects the vignetting effect.
+	*/
 	uint16_t j = 0;
-
 	while (!image[j + 1] || !image[j + 2] || !image[j + 3] || !image[j + 4]
 			|| !image[j + 5]) {
 		image[j] = 1;
 		j++;
 	}
 
+	/* goes from the right border towards the middle and checks i the next 5 consecutive points are 1.
+	 * if they aren't, it puts the current point to 1 and corrects the vignetting effect.
+	 */
 	j = 639;
-
 	while (!image[j - 5] || !image[j - 4] || !image[j - 3] || !image[j - 2]
 			|| !image[j - 1]) {
 		image[j] = 1;
 		j--;
 	}
 
+	//program takes an image point and compares it with maximal two neighbor points on each side to avoid fluctuations at the barcode edges.
 	for (uint16_t i = 1; i < IMAGE_BUFFER_SIZE - 2; i++) {
 		if (!image[i]) {
 			if (image[i - 1] && image[i + 1])
@@ -157,7 +172,15 @@ void binary_correction(uint8_t* image) {
 	}
 }
 
+/**
+* @brief   			converts the image into a binary image
+*
+* @param[in] image		array containing one line of the captured image
+* @param[out] b			decimal number of the barcode
+*/
 uint8_t edge_detection(uint8_t *image) {
+
+	//detects the edges of the barcode
 	uint16_t edge_array[14] = { 0 };
 	int16_t line_width[7] = { 0 };
 	uint8_t b = 0;
@@ -174,12 +197,14 @@ uint8_t edge_detection(uint8_t *image) {
 		}
 	}
 
+	//checks if all bars have a positive length
 	for (a = 0; a < 7; a++) {
 		line_width[a] = edge_array[2 * a + 1] - edge_array[2 * a];
 		if (line_width[a] <= 0)
 			return b = 0;;
 	}
 
+	//compares bars 2 to 5 with bars 1 and 6
 	for (a = 1; a < 5; a++) {
 		if (line_width[a] > (line_width[0] + line_width[5]) / 2)
 			line_width[a] = 1;
@@ -187,19 +212,7 @@ uint8_t edge_detection(uint8_t *image) {
 			line_width[a] = 0;
 	}
 
-//	for(a = 1; a < 5; a++){
-//		if(0.75*line_width[0] < line_width[a] && line_width[a] < 1.25*line_width[0])
-//			line_width[a] = 1;
-//		if(0.5*line_width[5] < line_width[a] && line_width[a] <= 2*line_width[5])
-//			line_width[a] = 0;
-//		if(line_width[a] != 0 || line_width[a] != 1)
-//			b=0;
-//		}
-//	for(a = 1; a < 5; a++){
-//		chprintf((BaseSequentialStream *)&SDU1, "%d = %d\r\n", a, line_width[a]);
-//		chThdSleepMilliseconds(500);
-//	}
-
+	//converts binary number into decimal number
 	b = line_width[1] * 8 + line_width[2] * 4 + line_width[3] * 2
 			+ line_width[4];
 	return b;
