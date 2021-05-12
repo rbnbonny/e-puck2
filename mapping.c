@@ -19,7 +19,9 @@
 #include <math.h>
 #include <prox_sensors.h>
 
+//length of a square in our laser-cut environment
 #define SQUARE_SIDE 124
+
 #define SIDEMAP_THRESHOLD 150
 #define FRONTMAP_THRESHOLD 70
 #define FRONTWALL_THRESHOLD 50
@@ -112,7 +114,7 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 
 //returns wall or empty in front of the robot based on the ToF value
 uint8_t map_draw_f_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].TOF_dis < FRONTMAP_THRESHOLD)
+	if (arr_map[i][j].TOF_dis < FRONTMAP_THRESHOLD) //if TOF value is smaller than FRONTMAP_THRESHOLD, there's wall in front of the robot
 		return WALL;
 	else
 		return EMPTY;
@@ -120,7 +122,7 @@ uint8_t map_draw_f_wall(uint8_t i, uint8_t j) {
 
 //returns wall or empty left to the robot
 uint8_t map_draw_l_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].IR_l_pro > SIDEMAP_THRESHOLD)
+	if (arr_map[i][j].IR_l_pro > SIDEMAP_THRESHOLD) //if IR value is larger than SIDEMAP_THRESHOLD, there's a lateral wall
 		return WALL;
 	else
 		return EMPTY;
@@ -128,7 +130,7 @@ uint8_t map_draw_l_wall(uint8_t i, uint8_t j) {
 
 //return wall or empty right to the robot
 uint8_t map_draw_r_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].IR_r_pro > SIDEMAP_THRESHOLD)
+	if (arr_map[i][j].IR_r_pro > SIDEMAP_THRESHOLD) //if IR value is larger than SIDEMAP_THRESHOLD, there's a lateral wall
 		return WALL;
 	else
 		return EMPTY;
@@ -250,7 +252,7 @@ static THD_FUNCTION(Mapping, arg) {
 		switch (turn_flag) {
 		case STRAIGHT:
 			if (path > mm_to_step(SQUARE_SIDE, 0)
-					&& get_TOFIR_values().TOF_dist > FRONTWALL_THRESHOLD) {
+					&& get_TOFIR_values().TOF_dist > FRONTWALL_THRESHOLD) { //if TOF larger than this value, there's no frontal wall.
 				set_compass(&compass, turn_flag);
 				map_data(compass, compass_old, &a, &b);
 				r_motor_pos_origin = right_motor_get_pos();
