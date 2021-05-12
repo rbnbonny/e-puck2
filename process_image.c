@@ -17,6 +17,8 @@
 
 #include <process_image.h>
 
+#define PROCESSIMAGE_WAIT 50
+
 static BSEMAPHORE_DECL(image_ready_sem, TRUE);
 
 uint8_t barcode_number = 0;
@@ -75,7 +77,7 @@ static THD_FUNCTION(ProcessImage, arg) {
 		binary_image(image);
 		//converts the image into a decimal number
 		barcode_number = edge_detection(image);
-		chThdSleepMilliseconds(50);
+		chThdSleepMilliseconds(PROCESSIMAGE_WAIT);
 	}
 }
 

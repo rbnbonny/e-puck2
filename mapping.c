@@ -23,6 +23,7 @@
 #define SIDEMAP_THRESHOLD 150
 #define FRONTMAP_THRESHOLD 70
 #define FRONTWALL_THRESHOLD 50
+#define MAPPING_WAIT 500
 
 static bool startFlag = true;
 
@@ -276,7 +277,7 @@ static THD_FUNCTION(Mapping, arg) {
 		default:
 			break;
 		}
-		chThdSleepMilliseconds(500);
+		chThdSleepMilliseconds(MAPPING_WAIT);
 	}
 }
 
