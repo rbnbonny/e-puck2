@@ -5,13 +5,13 @@
 
 #include <regulator.h>
 #include <main.h>
-#include <obstacle_detection.h>
 #include <process_image.h>
 #include <blinker.h>
 #include <motors.h>
 #include <mapping.h>
 
 #include <leds.h>
+#include <prox_sensors.h>
 
 #define KP 3.5 //1.2
 #define KI 0.3//0.3//0.2//0.0018//.00008//.001

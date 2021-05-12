@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <chprintf.h>
 
-#include <obstacle_detection.h>
 #include <mapping.h>
 #include <motors.h>
 #include <blinker.h>
 #include <music.h>
 #include <motor_control.h>
 #include <math.h>
+#include <prox_sensors.h>
 
 #define SQUARE_SIDE 124
 

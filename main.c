@@ -10,8 +10,8 @@
 #include <motors.h>
 #include <leds.h>
 #include <chprintf.h>
+#include <prox_sensors.h>
 
-#include "obstacle_detection.h"
 #include "motor_control.h"
 #include "regulator.h"
 #include "process_image.h"

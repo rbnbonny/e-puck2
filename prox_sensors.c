@@ -1,8 +1,7 @@
 #include <ch.h>
 #include <hal.h>
 #include <chprintf.h>
-#include <obstacle_detection.h>
-
+#include <prox_sensors.h>
 #include "msgbus/messagebus.h"
 #include "sensors/proximity.h"
 #include "sensors/VL53L0X/VL53L0X.h"

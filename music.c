@@ -5,11 +5,11 @@
 
 #include <music.h>
 #include <process_image.h>
-#include <obstacle_detection.h>
 #include <motor_control.h>
 #include <blinker.h>
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
+#include <prox_sensors.h>
 
 static bool partyMusic = false;
 

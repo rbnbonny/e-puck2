@@ -1,5 +1,5 @@
-#ifndef OBSTACLE_DETECTION_H_
-#define OBSTACLE_DETECTION_H_
+#ifndef PROX_SENSORS_H_
+#define PROX_SENSORS_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ TOFIR_msg_t get_TOFIR_values(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /* OBSTACLE_DETECTION_H_ */
+#endif /* PROX_SENSORS_H_ */
