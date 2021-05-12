@@ -1,3 +1,11 @@
+/*
+ * 	motor_control.h
+ *
+ *	Course: Embedded Systems and Robotics, MICRO-315
+ *  Created on: April 12, 2021
+ *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
+ */
+
 #ifndef MOTOR_CONTROL_H_
 #define MOTOR_CONTROL_H_
 

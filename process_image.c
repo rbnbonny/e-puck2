@@ -1,3 +1,11 @@
+/*
+ * 	process_image.c
+ *
+ *	Course: Embedded Systems and Robotics, MICRO-315
+ *  Created on: April 12, 2021
+ *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
+ */
+
 #include "ch.h"
 #include "hal.h"
 #include <chprintf.h>
@@ -12,15 +20,6 @@
 static BSEMAPHORE_DECL(image_ready_sem, TRUE);
 
 uint8_t barcode_number = 0;
-
-void SendUint8ToComputer(uint8_t* data, uint16_t size) {
-	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )"START",
-			5);
-	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )&size,
-			sizeof(uint16_t));
-	chSequentialStreamWrite((BaseSequentialStream * )&SD3, (uint8_t* )data,
-			size);
-}
 
 static THD_WORKING_AREA(CaptureImage_wa, 256);
 static THD_FUNCTION(CaptureImage, arg) {
@@ -74,7 +73,7 @@ static THD_FUNCTION(ProcessImage, arg) {
 
 		//converts the image into a binary image
 		binary_image(image);
-		//coverts the image into a decimal number
+		//converts the image into a decimal number
 		barcode_number = edge_detection(image);
 		chThdSleepMilliseconds(50);
 	}
