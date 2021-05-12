@@ -176,7 +176,7 @@ void binary_correction(uint8_t* image) {
 * @brief   			converts the image into a binary image
 *
 * @param[in] image		array containing one line of the captured image
-* @param[out] b			decimal number of the barcode
+* @return    b			decimal number of the barcode
 */
 uint8_t edge_detection(uint8_t *image) {
 
