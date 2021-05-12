@@ -106,21 +106,22 @@ void map_print(void) {
 		for (uint8_t j = 0; j < 11; j++) {
 			switch (general_map[i][j]) {
 			case NOTHING:
-				chprintf((BaseSequentialStream *) &SD3, ".");
+				chprintf((BaseSequentialStream *) &SD3, " ");
 				break;
 			case ROBOT:
-				chprintf((BaseSequentialStream *) &SD3, "o");
+				chprintf((BaseSequentialStream *) &SD3, ".");
 				break;
 			case WALL:
-				chprintf((BaseSequentialStream *) &SD3, "X");
+				chprintf((BaseSequentialStream *) &SD3, "#");
 				break;
 			case EMPTY:
-				chprintf((BaseSequentialStream *) &SD3, " ");
+				chprintf((BaseSequentialStream *) &SD3, ".");
 				break;
 			}
 		}
-		chprintf((BaseSequentialStream *) &SD3, "\r\n\r\n");
+		chprintf((BaseSequentialStream *) &SD3, "\r\n");
 	}
+	chprintf((BaseSequentialStream *) &SD3, "\r\n");
 
 }
 

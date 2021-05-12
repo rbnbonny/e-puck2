@@ -13,24 +13,24 @@
 
 #include <leds.h>
 
-#define KP 0.9//1.2
+#define KP 3.5 //1.2
 #define KI 0.3//0.3//0.2//0.0018//.00008//.001
 
-#define DIFFSPEED 5
+#define DIFFSPEED 1
 #define THRESHOLD_ERR 5
 
-#define WINDUP 100
+#define WINDUP 40
 
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD_1 100
+#define IR_THRESHOLD_1 90
 #define IR_THRESHOLD_2 150
 
 #define LATERAL_REGULATOR_PERIOD 20
 #define FRONTAL_REGULATOR_PERIOD 60
 
-static THD_WORKING_AREA(lateral_regulator_thd_wa, 8192);
+static THD_WORKING_AREA(lateral_regulator_thd_wa, 4096);
 static THD_FUNCTION(lateral_regulator_thd, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
