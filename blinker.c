@@ -6,7 +6,7 @@
 #include <leds.h>
 
 #define PARTYPERIOD 50
-#define PARTIES 5
+#define PARTIES 10
 
 static bool leftBlinker = false;
 static bool rightBlinker = false;

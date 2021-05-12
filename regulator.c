@@ -24,7 +24,7 @@
 #define FRONT_THRESHOLD 44
 #define RAND_THRESHOLD 100
 
-#define IR_THRESHOLD_1 90
+#define IR_THRESHOLD_1 100
 #define IR_THRESHOLD_2 150
 
 #define LATERAL_REGULATOR_PERIOD 20
@@ -60,7 +60,7 @@ static THD_FUNCTION(LateralRegulator, arg) {
 			err = -WINDUP;
 
 		if (get_TOFIR_values().TOF_dist
-				< 160|| get_TOFIR_values().IR_r_prox < IR_THRESHOLD_1 || get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1) {
+				< 170|| get_TOFIR_values().IR_r_prox < IR_THRESHOLD_1 || get_TOFIR_values().IR_l_prox < IR_THRESHOLD_1) {
 			err = 0;
 			integ = 0;
 		}
