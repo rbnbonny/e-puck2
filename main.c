@@ -27,9 +27,10 @@
 #include "mapping.h"
 #include "music.h"
 
+#define INITIAL_WAIT 2
+
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
-
 	sdStart(&SD3, &ser_cfg); // UART3.
 }
 
@@ -39,36 +40,24 @@ int main(void) {
 	chSysInit();
 	motors_init();
 
-	//starts the serial communication
 	serial_start();
-	//starts the USB communication
 	usb_start();
 
     dcmi_start();
 	po8030_start();
 
-
 	process_image_start();
-
-	chThdSleepMilliseconds(2000);
-
 	obstacle_detection_start();
-	chThdSleepMilliseconds(500);
-
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();
 	music_start();
+
+	chThdSleepSeconds(INITIAL_WAIT);
+
 	motor_straight();
 
 	while (1) {
-		/*
-		 * 1. Read out sensors
-		 * 2. Calculate action
-		 * 3. Actuate motors
-		 * 4. Calculate map
-		 * 5. Transmit map
-		 */
 		chThdSleepMilliseconds(100);
 	}
 }

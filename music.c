@@ -19,9 +19,16 @@
 #include <audio/audio_thread.h>
 #include <prox_sensors.h>
 
+// Threshold under which images should be checked for codes [mm]
+#define READ_THRESHOLD 140
+// Number of repeated detections necessary
+#define CONFIRMS 3
+
+#define MUSIC_PERIOD 200
+
 static bool partyMusic = false;
 
-static THD_WORKING_AREA(Music_wa, 8192);
+static THD_WORKING_AREA(Music_wa, 4096);
 static THD_FUNCTION(Music, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
@@ -36,11 +43,14 @@ static THD_FUNCTION(Music, arg) {
 
 	while (1) {
 		barcode_num = get_barcode_number();
-		if (barcode_num > 0 && get_TOFIR_values().TOF_dist < 140 && confirm < 3
-				&& barcode_num != last_code) {
+		if (barcode_num > 0 && get_TOFIR_values().TOF_dist < READ_THRESHOLD
+				&& confirm < CONFIRMS && barcode_num != last_code) {
+			// Check for repeated detections to avoid errors due to noise
 			confirm++;
-		} else if (confirm >= 3 && barcode_num > 0) {
+		} else if (confirm >= CONFIRMS && barcode_num > 0) {
+			// Visually indicate read ID
 			call_blinker(STRAIGHT, barcode_num);
+
 			switch (barcode_num) {
 			case 1:
 				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
@@ -67,10 +77,11 @@ static THD_FUNCTION(Music, arg) {
 			confirm = 0;
 		}
 		if (partyMusic) {
+			// Music to play when returning to start position
 			playMelody(MARIO_FLAG, ML_FORCE_CHANGE, NULL);
 			partyMusic = false;
 		}
-		chThdSleepMilliseconds(200);
+		chThdSleepMilliseconds(MUSIC_PERIOD);
 	}
 }
 
@@ -79,6 +90,7 @@ void music_start(void) {
 	NORMALPRIO, Music, NULL);
 }
 
+// Setter for music when returning to start position
 void party_music(void) {
 	partyMusic = true;
 }

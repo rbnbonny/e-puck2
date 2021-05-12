@@ -44,18 +44,14 @@ static THD_FUNCTION(IRsensor, arg) {
 	proximity_msg_t prox_values;
 
 	while (1) {
+		// Wait for data to be advertised on message bus
 		messagebus_topic_wait(proximity_topic, &prox_values,
 				sizeof(prox_values));
 		TOFIR_values.IR_r_prox = get_prox(IR_SENSORNUM_R);
 		TOFIR_values.IR_rf_prox = get_prox(IR_SENSORNUM_RF);
 		TOFIR_values.IR_l_prox = get_prox(IR_SENSORNUM_L);
 		TOFIR_values.IR_lf_prox = get_prox(IR_SENSORNUM_LF);
-//		chprintf((BaseSequentialStream *) &SD3, "TOF Distance: %d mm \r\n",
-//				TOFIR_values.TOF_dist);
-//		chprintf((BaseSequentialStream *) &SD3,
-//				"IR Levels: R%d RF%d L%d LF%d \r\n", TOFIR_values.IR_r_prox,
-//				TOFIR_values.IR_rf_prox, TOFIR_values.IR_l_prox,
-//				TOFIR_values.IR_lf_prox);
+
 		chThdSleepMilliseconds(IR_SAMPLING_WAIT);
 	}
 }
@@ -64,6 +60,7 @@ void obstacle_detection_start(void) {
 
 	messagebus_init(&bus, &bus_lock, &bus_condvar);
 
+	// Start sensors
 	VL53L0X_start();
 	proximity_start();
 
@@ -74,6 +71,7 @@ void obstacle_detection_start(void) {
 	NORMALPRIO, IRsensor, NULL);
 }
 
+// Returns sensor data required in all other modules
 TOFIR_msg_t get_TOFIR_values(void) {
 	return TOFIR_values;
 }
