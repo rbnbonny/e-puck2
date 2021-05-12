@@ -12,6 +12,8 @@
 #include <prox_sensors.h>
 
 #define SQUARE_SIDE 124
+#define SIDEWALL_THRESHOLD 150
+#define FRONTWALL_THRESHOLD 70
 
 static bool startFlag = true;
 
@@ -26,13 +28,25 @@ static direction turn_flag = 0;
 static struct map arr_map[5][5] = { 0 };
 static picasso general_map[11][11] = { 0 };
 
-static uint8_t counter = 0;
 
+/**
+* @brief   				converts a mm-input into steps to drive
+*
+* @param[in] dis		1. value to set the mm distance
+* @param[in] tolerance	2. value to set the mm distance
+* @return step			steps to drive ouput
+*/
 int32_t mm_to_step(int dis, int tolerance) {
 	int32_t step = (dis - tolerance) * WHEEL_STEP / (WHEEL_D * M_PI);
 	return step;
 }
 
+/**
+* @brief   				sets the new orientation to the robot
+*
+* @param[in] compass	orientation of the robot
+* @param[in] dir		orientation change
+*/
 void set_compass(galileo *compass, direction dir) {
 	galileo comp = *compass;
 	comp += dir;
@@ -43,11 +57,20 @@ void set_compass(galileo *compass, direction dir) {
 	*compass = comp;
 }
 
+/**
+* @brief   				captures the environment at a specific point to draw later the map
+*
+* @param[in] compass	next orientation of the robot after the capture
+* @param[in] compass_old current orientation of the robot
+* @param[in] a			y axis coordinate for the map
+* @param[in] b 			x axis coordinate for the map
+*/
 void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 
 	uint8_t i = *a;
 	uint8_t j = *b;
 
+	//stores front / lateral distances, current and future orientation and if map field has been updated
 	arr_map[i][j].TOF_dis = get_TOFIR_values().TOF_dist;
 	arr_map[i][j].IR_r_pro = get_TOFIR_values().IR_r_prox;
 	arr_map[i][j].IR_l_pro = get_TOFIR_values().IR_l_prox;
@@ -55,12 +78,10 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	arr_map[i][j].dir = compass;
 	arr_map[i][j].conquest = 1;
 
+	//draws the map
 	map_draw(i, j);
 
-	counter++;
-	if (counter >= 25)
-		counter = 0;
-
+	//sets up next map field, based on the future orientation
 	switch (compass) {
 	case NORTH:
 		i++;
@@ -79,27 +100,31 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	*b = j;
 }
 
+//returns wall or empty in front of the robot based on the ToF value
 uint8_t map_draw_f_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].TOF_dis < 70)
+	if (arr_map[i][j].TOF_dis < FRONTWALL_THRESHOLD)
 		return WALL;
 	else
 		return EMPTY;
 }
 
+//returns wall or empty left to the robot
 uint8_t map_draw_l_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].IR_l_pro > 150)
+	if (arr_map[i][j].IR_l_pro > SIDEWALL_THRESHOLD)
 		return WALL;
 	else
 		return EMPTY;
 }
 
+//return wall or empty right to the robot
 uint8_t map_draw_r_wall(uint8_t i, uint8_t j) {
-	if (arr_map[i][j].IR_r_pro > 150)
+	if (arr_map[i][j].IR_r_pro > SIDEWALL_THRESHOLD)
 		return WALL;
 	else
 		return EMPTY;
 }
 
+//sends the map to the computer
 void map_print(void) {
 
 	for (int8_t i = 10; i >= 0; i--) {
@@ -125,8 +150,19 @@ void map_print(void) {
 
 }
 
+/**
+* @brief   				draws the map
+*
+* @param[in] i			y axis coordinate
+* @param[in] j			x axis coordinate
+*/
 void map_draw(uint8_t i, uint8_t j) {
 
+	/*maps the 5x5 field into a 11x11 field. odd numbers are robot positions, even numbers are "wall" positions in the map array.
+	* As the robot can not see "border fields" (for example position [2][2] in the map field (start counting with 0)
+	* this function also writes the seen values to the neighbor points. (for example if the robot is in field [7][7] direction north and
+	* it sees a border at [7][8] it draws the border as well to [6][8] and [8][8]
+	*/
 	general_map[2 * i + 1][2 * j + 1] = ROBOT;
 	switch (arr_map[i][j].dir_old) {  //conversion is 2*i + 1
 	case NORTH:
@@ -167,7 +203,9 @@ void map_draw(uint8_t i, uint8_t j) {
 		break;
 	}
 
+	//send the map to the computer
 	map_print();
+	//makes party when the robot has finished one cycle and is back on position (0;0)
 	if (i == 0 && j == 0 && startFlag == false) {
 		party_blinker();
 		party_music();
@@ -182,9 +220,10 @@ static THD_FUNCTION(Mapping, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
-	r_motor_pos_origin = right_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
-	l_motor_pos_origin = left_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10); //muss noch anderst initialisiert werden um Pos 0 bereits zu erkennen
+	r_motor_pos_origin = right_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10);
+	l_motor_pos_origin = left_motor_get_pos() - mm_to_step(SQUARE_SIDE, 10);
 
+	//robot starts its cycle at the bottom left side oriented towards north
 	uint8_t a = 0; //y Koordinate
 	uint8_t b = 0; //x Koordinate
 
@@ -208,7 +247,6 @@ static THD_FUNCTION(Mapping, arg) {
 				l_motor_pos_origin = left_motor_get_pos();
 				compass_old = compass;
 			}
-
 			break;
 		case LEFT:
 			set_compass(&compass, turn_flag);
@@ -229,7 +267,6 @@ static THD_FUNCTION(Mapping, arg) {
 		default:
 			break;
 		}
-
 		chThdSleepMilliseconds(500);
 	}
 }
