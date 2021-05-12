@@ -13,8 +13,8 @@
 
 static bool partyMusic = false;
 
-static THD_WORKING_AREA(music_thd_wa, 8192);
-static THD_FUNCTION(music_thd, arg) {
+static THD_WORKING_AREA(Music_wa, 8192);
+static THD_FUNCTION(Music, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -67,8 +67,8 @@ static THD_FUNCTION(music_thd, arg) {
 }
 
 void music_start(void) {
-	chThdCreateStatic(music_thd_wa, sizeof(music_thd_wa),
-	NORMALPRIO, music_thd, NULL);
+	chThdCreateStatic(Music_wa, sizeof(Music_wa),
+	NORMALPRIO, Music, NULL);
 }
 
 void party_music(void) {

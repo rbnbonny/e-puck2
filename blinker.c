@@ -14,8 +14,8 @@ static bool frontBlinker = false;
 static bool partyBlinker = false;
 static uint8_t repeat = 0;
 
-static THD_WORKING_AREA(blinker_thd_wa, 256);
-static THD_FUNCTION(blinker_thd, arg) {
+static THD_WORKING_AREA(Blinker_wa, 256);
+static THD_FUNCTION(Blinker, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -109,6 +109,6 @@ void party_blinker() {
 }
 
 void blinker_start(void) {
-	chThdCreateStatic(blinker_thd_wa, sizeof(blinker_thd_wa),
-	NORMALPRIO, blinker_thd, NULL);
+	chThdCreateStatic(Blinker_wa, sizeof(Blinker_wa),
+	NORMALPRIO, Blinker, NULL);
 }

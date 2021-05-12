@@ -16,8 +16,8 @@ messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
-static THD_WORKING_AREA(TOFsensor_thd_wa, 1024);
-static THD_FUNCTION(TOFsensor_thd, arg) {
+static THD_WORKING_AREA(TOFsensor_wa, 1024);
+static THD_FUNCTION(TOFsensor, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -27,8 +27,8 @@ static THD_FUNCTION(TOFsensor_thd, arg) {
 	}
 }
 
-static THD_WORKING_AREA(IRsensor_thd_wa, 1024);
-static THD_FUNCTION(IRsensor_thd, arg) {
+static THD_WORKING_AREA(IRsensor_wa, 1024);
+static THD_FUNCTION(IRsensor, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -60,11 +60,11 @@ void obstacle_detection_start(void) {
 	VL53L0X_start();
 	proximity_start();
 
-	chThdCreateStatic(TOFsensor_thd_wa, sizeof(TOFsensor_thd_wa),
-	NORMALPRIO, TOFsensor_thd, NULL);
+	chThdCreateStatic(TOFsensor_wa, sizeof(TOFsensor_wa),
+	NORMALPRIO, TOFsensor, NULL);
 
-	chThdCreateStatic(IRsensor_thd_wa, sizeof(IRsensor_thd_wa),
-	NORMALPRIO, IRsensor_thd, NULL);
+	chThdCreateStatic(IRsensor_wa, sizeof(IRsensor_wa),
+	NORMALPRIO, IRsensor, NULL);
 }
 
 TOFIR_msg_t get_TOFIR_values(void) {

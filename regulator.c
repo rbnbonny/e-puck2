@@ -30,8 +30,8 @@
 #define LATERAL_REGULATOR_PERIOD 20
 #define FRONTAL_REGULATOR_PERIOD 60
 
-static THD_WORKING_AREA(lateral_regulator_thd_wa, 4096);
-static THD_FUNCTION(lateral_regulator_thd, arg) {
+static THD_WORKING_AREA(LateralRegulator_wa, 4096);
+static THD_FUNCTION(LateralRegulator, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -84,8 +84,8 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 	}
 }
 
-static THD_WORKING_AREA(frontal_regulator_thd_wa, 1024);
-static THD_FUNCTION(frontal_regulator_thd, arg) {
+static THD_WORKING_AREA(FrontalRegulator_wa, 1024);
+static THD_FUNCTION(FrontalRegulator, arg) {
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
 
@@ -106,16 +106,16 @@ static THD_FUNCTION(frontal_regulator_thd, arg) {
 }
 
 void lateral_regulator_start(void) {
-	chThdCreateStatic(lateral_regulator_thd_wa,
-			sizeof(lateral_regulator_thd_wa),
-			NORMALPRIO - 1, lateral_regulator_thd, NULL);
+	chThdCreateStatic(LateralRegulator_wa,
+			sizeof(LateralRegulator_wa),
+			NORMALPRIO - 1, LateralRegulator, NULL);
 }
 
 void frontal_regulator_start(void) {
 	blinker_start();
-	chThdCreateStatic(frontal_regulator_thd_wa,
-			sizeof(frontal_regulator_thd_wa),
-			NORMALPRIO, frontal_regulator_thd, NULL);
+	chThdCreateStatic(FrontalRegulator_wa,
+			sizeof(FrontalRegulator_wa),
+			NORMALPRIO, FrontalRegulator, NULL);
 }
 
 direction determine90(void) {

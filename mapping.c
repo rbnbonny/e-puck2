@@ -176,8 +176,8 @@ void map_draw(uint8_t i, uint8_t j) {
 	}
 }
 
-static THD_WORKING_AREA(Mapping_Value_wa, 4096);
-static THD_FUNCTION(Mapping_Value, arg) {
+static THD_WORKING_AREA(Mapping_wa, 4096);
+static THD_FUNCTION(Mapping, arg) {
 
 	(void) arg;
 	chRegSetThreadName(__FUNCTION__);
@@ -235,8 +235,8 @@ static THD_FUNCTION(Mapping_Value, arg) {
 }
 
 void mapping_start(void) {
-	chThdCreateStatic(Mapping_Value_wa, sizeof(Mapping_Value_wa),
-	NORMALPRIO, Mapping_Value, NULL);
+	chThdCreateStatic(Mapping_wa, sizeof(Mapping_wa),
+	NORMALPRIO, Mapping, NULL);
 }
 
 void set_turn(direction dir) {

@@ -22,7 +22,7 @@ void SendUint8ToComputer(uint8_t* data, uint16_t size) {
 			size);
 }
 
-static THD_WORKING_AREA(waCaptureImage, 256);
+static THD_WORKING_AREA(CaptureImage_wa, 256);
 static THD_FUNCTION(CaptureImage, arg) {
 
 	chRegSetThreadName(__FUNCTION__);
@@ -47,7 +47,7 @@ static THD_FUNCTION(CaptureImage, arg) {
 	}
 }
 
-static THD_WORKING_AREA(waProcessImage, 1024);
+static THD_WORKING_AREA(ProcessImage_wa, 1024);
 static THD_FUNCTION(ProcessImage, arg) {
 
 	chRegSetThreadName(__FUNCTION__);
@@ -206,9 +206,9 @@ uint8_t edge_detection(uint8_t *image) {
 }
 
 void process_image_start(void) {
-	chThdCreateStatic(waProcessImage, sizeof(waProcessImage), NORMALPRIO,
+	chThdCreateStatic(ProcessImage_wa, sizeof(ProcessImage_wa), NORMALPRIO,
 			ProcessImage, NULL);
-	chThdCreateStatic(waCaptureImage, sizeof(waCaptureImage), NORMALPRIO,
+	chThdCreateStatic(CaptureImage_wa, sizeof(CaptureImage_wa), NORMALPRIO,
 			CaptureImage, NULL);
 }
 
