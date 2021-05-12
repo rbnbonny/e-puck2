@@ -1,5 +1,3 @@
-
-
 #ifndef MAPPING_H_
 #define MAPPING_H_
 
@@ -9,7 +7,7 @@ extern "C" {
 
 #include <motor_control.h>
 
-struct map{
+struct map {
 	uint16_t TOF_dis;
 	int IR_r_pro;
 	int IR_l_pro;
@@ -23,6 +21,10 @@ typedef enum {
 } galileo;
 
 void mapping_start(void);
+uint8_t map_draw_f_wall(uint8_t, uint8_t);
+uint8_t map_draw_l_wall(uint8_t, uint8_t);
+uint8_t map_draw_r_wall(uint8_t, uint8_t);
+void map_draw(uint8_t, uint8_t);
 void set_turn(direction);
 
 #ifdef __cplusplus

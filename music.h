@@ -1,5 +1,5 @@
-#ifndef BLINKER_H_
-#define BLINKER_H_
+#ifndef MUSIC_H_
+#define MUSIC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,4 +11,4 @@ void party_music(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /* BLINKER_H_ */
+#endif /* MUSIC_H_ */

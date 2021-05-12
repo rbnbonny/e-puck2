@@ -41,8 +41,6 @@ static THD_FUNCTION(lateral_regulator_thd, arg) {
 	int leftIR = 0;
 	int32_t integ = 0;
 
-	static uint8_t controller_mode = 0;
-
 	while (1) {
 		time = chVTGetSystemTime();
 		rightIR = (get_TOFIR_values().IR_r_prox + get_TOFIR_values().IR_rf_prox)

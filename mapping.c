@@ -79,21 +79,21 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 	*b = j;
 }
 
-uint8_t map_draw_f_wall( i, j) {
+uint8_t map_draw_f_wall(uint8_t i, uint8_t j) {
 	if (arr_map[i][j].TOF_dis < 70)
 		return WALL;
 	else
 		return EMPTY;
 }
 
-uint8_t map_draw_l_wall( i, j) {
+uint8_t map_draw_l_wall(uint8_t i, uint8_t j) {
 	if (arr_map[i][j].IR_l_pro > 150)
 		return WALL;
 	else
 		return EMPTY;
 }
 
-uint8_t map_draw_r_wall( i, j) {
+uint8_t map_draw_r_wall(uint8_t i, uint8_t j) {
 	if (arr_map[i][j].IR_r_pro > 150)
 		return WALL;
 	else
