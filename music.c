@@ -32,44 +32,29 @@ static THD_FUNCTION(music_thd, arg) {
 				&& barcode_num != last_code) {
 			confirm++;
 		} else if (confirm >= 3 && barcode_num > 0) {
-//			chprintf((BaseSequentialStream *) &SD3, "Code: %d \r\n",
-//					get_barcode_number());
-
 			call_blinker(STRAIGHT, barcode_num);
-//			switch (barcode_num) {
-//			case 1:
-//				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 2:
-////				playMelody(RUSSIA, ML_FORCE_CHANGE, NULL);
-//				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 3:
-//				playMelody(WE_ARE_THE_CHAMPIONS, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 4:
-////				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
-//				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 5:
-//				playMelody(UNDERWORLD, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 6:
-////				playMelody(WALKING, ML_FORCE_CHANGE, NULL);
-//				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 7:
-//				playMelody(PIRATES_OF_THE_CARIBBEAN, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 8:
-//				playMelody(SIMPSON, ML_FORCE_CHANGE, NULL);
-//				break;
-//			case 9:
-//				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
-//				break;
-//			default:
-//				break;
-//			}
+			switch (barcode_num) {
+			case 1:
+				playMelody(IMPOSSIBLE_MISSION, ML_FORCE_CHANGE, NULL);
+				break;
+			case 2:
+				playMelody(WE_ARE_THE_CHAMPIONS, ML_FORCE_CHANGE, NULL);
+				break;
+			case 3:
+				playMelody(MARIO, ML_FORCE_CHANGE, NULL);
+				break;
+			case 4:
+				playMelody(PIRATES_OF_THE_CARIBBEAN, ML_FORCE_CHANGE, NULL);
+				break;
+			case 5:
+				playMelody(STARWARS, ML_FORCE_CHANGE, NULL);
+				break;
+			case 6:
+				playMelody(SANDSTORMS, ML_FORCE_CHANGE, NULL);
+				break;
+			default:
+				break;
+			}
 			last_code = barcode_num;
 			confirm = 0;
 		}

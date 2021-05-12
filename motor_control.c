@@ -56,7 +56,7 @@ void motor_straight(void) {
 	right_motor_set_speed(MOTORSPEED);
 }
 
-void motor_stopp(void) {
+void motor_stop(void) {
 	left_motor_set_speed(0);
 	right_motor_set_speed(0);
 }

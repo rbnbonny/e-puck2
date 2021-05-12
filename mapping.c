@@ -13,6 +13,8 @@
 
 #define SQUARE_SIDE 124
 
+static bool startFlag = true;
+
 typedef enum {
 	NOTHING = 0, ROBOT, WALL, EMPTY,
 } picasso;
@@ -165,11 +167,11 @@ void map_draw(uint8_t i, uint8_t j) {
 	}
 
 	map_print();
-	if(i==0 && j==0){
-		motor_stop();
+	if (i == 0 && j == 0 && startFlag == false) {
 		party_blinker();
 		party_music();
-		motor_straight();
+	} else {
+		startFlag = false;
 	}
 }
 
