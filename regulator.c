@@ -23,17 +23,17 @@
 #include <prox_sensors.h>
 
 // PI Controller parameters
-#define KP 3.5
+#define KP 3.2
 #define KI 0.3
 
 // Minimum error before actuating motors
 #define THRESHOLD_ERR 5
 
 // Limitation of errors for PI controller
-#define WINDUP 40
+#define WINDUP 35
 
 // Threshold to initiate turn [mm]
-#define FRONT_THRESHOLD 44
+#define FRONT_THRESHOLD 43
 
 // Threshold for randomized turning
 #define RAND_THRESHOLD 100

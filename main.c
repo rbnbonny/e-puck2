@@ -27,7 +27,7 @@
 #include "mapping.h"
 #include "music.h"
 
-#define INITIAL_WAIT 2
+#define INITIAL_WAIT 2500
 
 static void serial_start(void) {
 	static SerialConfig ser_cfg = { 115200, 0, 0, 0, };
@@ -47,13 +47,18 @@ int main(void) {
 	po8030_start();
 
 	process_image_start();
+
+	chThdSleepMilliseconds(INITIAL_WAIT);
+
 	obstacle_detection_start();
+
+	chThdSleepMilliseconds(INITIAL_WAIT);
+
 	frontal_regulator_start();
 	lateral_regulator_start();
 	mapping_start();
 	music_start();
 
-	chThdSleepSeconds(INITIAL_WAIT);
 
 	motor_straight();
 
