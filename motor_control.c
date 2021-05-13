@@ -9,12 +9,11 @@
 #include <ch.h>
 #include <hal.h>
 #include <stdlib.h>
-#include <math.h>
-#include <chprintf.h>
 
-#include <main.h>
-#include <motor_control.h>
 #include <motors.h>
+
+#include "motor_control.h"
+#include "main.h"
 
 #define FULL_ANGLE 360
 

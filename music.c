@@ -9,15 +9,15 @@
 #include <ch.h>
 #include <hal.h>
 #include <stdlib.h>
-#include <chprintf.h>
 
-#include <music.h>
-#include <process_image.h>
-#include <motor_control.h>
-#include <blinker.h>
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
-#include <prox_sensors.h>
+
+#include "music.h"
+#include "prox_sensors.h"
+#include "process_image.h"
+#include "motor_control.h"
+#include "blinker.h"
 
 // Threshold under which images should be checked for codes [mm]
 #define READ_THRESHOLD 140

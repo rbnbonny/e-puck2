@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#include <motor_control.h>
+#include "motor_control.h"
 
 struct map {
 	uint16_t TOF_dis;

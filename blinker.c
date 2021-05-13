@@ -10,11 +10,14 @@
 #include <hal.h>
 #include <stdlib.h>
 
-#include <blinker.h>
 #include <leds.h>
+
+#include "blinker.h"
 
 #define BLINKER_WAIT 50
 #define PARTYPERIOD 50
+
+// Amount of party mode iterations
 #define PARTIES 10
 
 static bool leftBlinker = false;

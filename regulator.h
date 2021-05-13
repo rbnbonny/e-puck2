@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#include <motor_control.h>
+#include "motor_control.h"
 
 void lateral_regulator_start(void);
 void frontal_regulator_start(void);

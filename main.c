@@ -6,21 +6,17 @@
  *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
  */
 
-
-#include <stdio.h>
+#include <ch.h>
+#include <hal.h>
 #include <stdlib.h>
-#include <string.h>
-
-#include "ch.h"
-#include "hal.h"
-#include "memory_protection.h"
+#include <memory_protection.h>
 #include <usbcfg.h>
-#include <main.h>
+
 #include <motors.h>
 #include <leds.h>
-#include <chprintf.h>
-#include <prox_sensors.h>
 
+#include "main.h"
+#include "prox_sensors.h"
 #include "motor_control.h"
 #include "regulator.h"
 #include "process_image.h"
@@ -58,7 +54,6 @@ int main(void) {
 	lateral_regulator_start();
 	mapping_start();
 	music_start();
-
 
 	motor_straight();
 

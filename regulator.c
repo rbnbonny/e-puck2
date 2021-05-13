@@ -9,18 +9,15 @@
 #include <ch.h>
 #include <hal.h>
 #include <stdlib.h>
-#include <chprintf.h>
-#include <math.h>
 
-#include <regulator.h>
-#include <main.h>
-#include <process_image.h>
-#include <blinker.h>
 #include <motors.h>
-#include <mapping.h>
-
 #include <leds.h>
-#include <prox_sensors.h>
+
+#include "regulator.h"
+#include "main.h"
+#include "prox_sensors.h"
+#include "blinker.h"
+#include "mapping.h"
 
 // PI Controller parameters
 #define KP 3.2
@@ -30,7 +27,7 @@
 #define THRESHOLD_ERR 5
 
 // Limitation of errors for PI controller
-#define WINDUP 35
+#define WINDUP 30
 
 // Threshold to initiate turn [mm]
 #define FRONT_THRESHOLD 43

@@ -6,22 +6,21 @@
  *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
  */
 
-#include "ch.h"
-#include "hal.h"
-#include <chprintf.h>
-#include <usbcfg.h>
+#include <ch.h>
+#include <hal.h>
+#include <stdlib.h>
 #include <math.h>
 
-#include <main.h>
 #include <camera/po8030.h>
 
-#include <process_image.h>
+#include "process_image.h"
+#include "main.h"
 
 #define PROCESSIMAGE_WAIT 50
 
 static BSEMAPHORE_DECL(image_ready_sem, TRUE);
 
-uint8_t barcode_number = 0;
+static uint8_t barcode_number = 0;
 
 static THD_WORKING_AREA(CaptureImage_wa, 256);
 static THD_FUNCTION(CaptureImage, arg) {

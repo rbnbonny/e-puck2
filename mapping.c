@@ -9,15 +9,15 @@
 #include <ch.h>
 #include <hal.h>
 #include <stdlib.h>
+#include <math.h>
 #include <chprintf.h>
 
-#include <mapping.h>
 #include <motors.h>
-#include <blinker.h>
-#include <music.h>
-#include <motor_control.h>
-#include <math.h>
-#include <prox_sensors.h>
+
+#include "mapping.h"
+#include "prox_sensors.h"
+#include "blinker.h"
+#include "music.h"
 
 //length of a square in our laser-cut environment
 #define SQUARE_SIDE 124

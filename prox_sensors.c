@@ -8,11 +8,13 @@
 
 #include <ch.h>
 #include <hal.h>
-#include <chprintf.h>
-#include <prox_sensors.h>
-#include "msgbus/messagebus.h"
-#include "sensors/proximity.h"
-#include "sensors/VL53L0X/VL53L0X.h"
+#include <stdlib.h>
+
+#include <msgbus/messagebus.h>
+#include <sensors/proximity.h>
+#include <sensors/VL53L0X/VL53L0X.h>
+
+#include "prox_sensors.h"
 
 #define TOF_SAMPLING_WAIT 120
 #define IR_SAMPLING_WAIT 80
