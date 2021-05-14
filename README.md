@@ -6,4 +6,4 @@ For the course ‘Embedded Systems and Robotics’ a small project on basis of a
 * Mapping of the structure of the traversed labyrinth
 * Light and sound effects
 
-The frontal time-of-flight (ToF) distance sensor, 4 IR proximity sensors, the camera, several LEDs, the buzzer,as well as both stepper motors were used for the implementation of aforementioned functions.
+The frontal time-of-flight (ToF) distance sensor, 4 IR proximity sensors, the camera, several LEDs, the buzzer, as well as both stepper motors were used for the implementation of aforementioned functions.
