@@ -2,7 +2,7 @@
  * 	prox_sensors.c
  *
  *	Course: Embedded Systems and Robotics, MICRO-315
- *  Created on: April 12, 2021
+ *  Created on: April 08, 2021
  *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
  */
 
