@@ -15,10 +15,12 @@ extern "C" {
 
 #include "motor_control.h"
 
+//enum for robot orientations
 typedef enum {
 	NORTH = 0, EAST, SOUTH, WEST,
 } galileo;
 
+//struct to store survey points of the robot (front and lateral distances, old direction, new direction and if field has been updated by the robot)
 struct map {
 	uint16_t TOF_dis;
 	int IR_r_pro;

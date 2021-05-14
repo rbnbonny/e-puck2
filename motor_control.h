@@ -16,6 +16,7 @@ extern "C" {
 #define WHEEL_D 41 //mm
 #define WHEEL_STEP 1000 //number of steps per rotation
 
+//enum for turn directions of robot
 typedef enum {
 	LEFT = -1, STRAIGHT = 0, RIGHT = 1,
 } direction;

@@ -52,9 +52,9 @@ static picasso general_map[2 * CELLS + 1][2 * CELLS + 1] = { 0 };
 /**
  * @brief   				converts a mm-input into steps to drive
  *
- * @param[in] dis		1. value to set the mm distance
- * @param[in] tolerance	2. value to set the mm distance
- * @return step			steps to drive ouput
+ * @param[in] dis			1. value to set the mm distance
+ * @param[in] tolerance		2. value to set the mm distance
+ * @return step				steps to drive ouput
  */
 int32_t mm_to_step(int dis, int tolerance) {
 	int32_t step = (dis - tolerance) * WHEEL_STEP / (WHEEL_D * M_PI);
@@ -64,8 +64,8 @@ int32_t mm_to_step(int dis, int tolerance) {
 /**
  * @brief   				sets the new orientation to the robot
  *
- * @param[in] compass	orientation of the robot
- * @param[in] dir		orientation change
+ * @param[in] compass		orientation of the robot
+ * @param[in] dir			orientation change
  */
 void set_compass(galileo *compass, direction dir) {
 	galileo comp = *compass;
@@ -80,9 +80,9 @@ void set_compass(galileo *compass, direction dir) {
 /**
  * @brief   				captures the environment at a specific point to draw later the map
  *
- * @param[in] compass	next orientation of the robot after the capture
- * @param[in] compass_old current orientation of the robot
- * @param[in] a			y axis coordinate for the map
+ * @param[in] compass		next orientation of the robot after the capture
+ * @param[in] compass_old 	current orientation of the robot
+ * @param[in] a				y axis coordinate for the map
  * @param[in] b 			x axis coordinate for the map
  */
 void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
@@ -122,7 +122,7 @@ void map_data(galileo compass, galileo compass_old, uint8_t* a, uint8_t* b) {
 
 //returns wall or empty in front of the robot based on the ToF value
 uint8_t map_draw_f_wall(uint8_t i, uint8_t j) {
-	//if TOF value is smaller than FRONTMAP_THRESHOLD, there's wall in front of the robot
+	//if TOF value is smaller than FRONTMAP_THRESHOLD, there's a wall in front of the robot
 	if (arr_map[i][j].TOF_dis < FRONTMAP_THRESHOLD)
 		return WALL;
 	else
@@ -138,7 +138,7 @@ uint8_t map_draw_l_wall(uint8_t i, uint8_t j) {
 		return EMPTY;
 }
 
-//return wall or empty right to the robot
+//returns wall or empty right to the robot
 uint8_t map_draw_r_wall(uint8_t i, uint8_t j) {
 	//if IR value is larger than SIDEMAP_THRESHOLD, there's a lateral wall
 	if (arr_map[i][j].IR_r_pro > SIDEMAP_THRESHOLD)
@@ -176,8 +176,8 @@ void map_print(void) {
 /**
  * @brief   				draws the map
  *
- * @param[in] i			y axis coordinate
- * @param[in] j			x axis coordinate
+ * @param[in] i				y axis coordinate
+ * @param[in] j				x axis coordinate
  */
 void map_draw(uint8_t i, uint8_t j) {
 
@@ -226,7 +226,7 @@ void map_draw(uint8_t i, uint8_t j) {
 		break;
 	}
 
-	//send the map to the computer
+	//sends the map to the computer
 	map_print();
 	//makes party when the robot has finished one cycle and is back on position (0;0)
 	if (i == 0 && j == 0 && startFlag == false) {
