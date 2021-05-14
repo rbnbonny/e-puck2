@@ -78,11 +78,11 @@ static THD_FUNCTION(Blinker, arg) {
 }
 
 /**
-* @brief   			activates blinking of the robot, depending on a left or right turn
-* @brief			activates blinking of the robot, depending on the seen barcode number (nb of blinking = nb of barcode)
-*
-* @param[in] dir	direction of the robot, indicates if turn blinking or barcode blinking
-*/
+ * @brief   			activates blinking of the robot, depending on a left or right turn
+ * @brief			activates blinking of the robot, depending on the seen barcode number (nb of blinking = nb of barcode)
+ *
+ * @param[in] dir	direction of the robot, indicates if turn blinking or barcode blinking
+ */
 void blinker(direction dir) {
 	for (uint8_t i = 0; i < repeat; i++) {
 		switch (dir) {
@@ -105,11 +105,11 @@ void blinker(direction dir) {
 }
 
 /**
-* @brief					initializes turn or barcode blinker
-*
-* @param[in] dir			direction of the robot
-* @param[in] ext_repeat 	nb to declare blinking times
-*/
+ * @brief					initializes turn or barcode blinker
+ *
+ * @param[in] dir			direction of the robot
+ * @param[in] ext_repeat 	nb to declare blinking times
+ */
 void call_blinker(direction dir, uint8_t ext_repeat) {
 	switch (dir) {
 	case LEFT:

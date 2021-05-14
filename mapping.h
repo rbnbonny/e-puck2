@@ -6,7 +6,6 @@
  *  Author: Robin Bonny (283196) and Andrea Bruder (283199)
  */
 
-
 #ifndef MAPPING_H_
 #define MAPPING_H_
 

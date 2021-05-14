@@ -39,7 +39,7 @@ int main(void) {
 	serial_start();
 	usb_start();
 
-    dcmi_start();
+	dcmi_start();
 	po8030_start();
 
 	process_image_start();

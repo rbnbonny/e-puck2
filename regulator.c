@@ -147,9 +147,9 @@ direction determine90(void) {
 	direction dir;
 	if (get_TOFIR_values().IR_r_prox > IR_THRESHOLD_2) {			// Left case
 		dir = LEFT;
-	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD_2) {		// Right case
+	} else if (get_TOFIR_values().IR_l_prox > IR_THRESHOLD_2) {	// Right case
 		dir = RIGHT;
-	} else {														// Random case
+	} else {													// Random case
 		systime_t time = chVTGetSystemTime();
 		srand(time);
 		(rand() % RAND_THRESHOLD > RAND_THRESHOLD / 2) ? (dir = LEFT) : (dir =
