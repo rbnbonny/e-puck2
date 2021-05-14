@@ -54,8 +54,8 @@ static THD_FUNCTION(LateralRegulator, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	systime_t time;
-	int32_t err = 0;
-	int32_t integ = 0;
+	static int32_t err = 0;
+	static int32_t integ = 0;
 	int rightIR = 0;
 	int leftIR = 0;
 

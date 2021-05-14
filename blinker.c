@@ -85,7 +85,6 @@ static THD_FUNCTION(Blinker, arg) {
 */
 void blinker(direction dir) {
 	for (uint8_t i = 0; i < repeat; i++) {
-
 		switch (dir) {
 		case LEFT:
 			set_led(LED7, 1);

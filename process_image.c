@@ -80,12 +80,11 @@ static THD_FUNCTION(ProcessImage, arg) {
 	}
 }
 
-
 /**
-* @brief   			converts the image into a binary image
-*
-* @param[in] image		array containing one line of the captured image
-*/
+ * @brief   			converts the image into a binary image
+ *
+ * @param[in] image		array containing one line of the captured image
+ */
 void binary_image(uint8_t* image) {
 
 	//takes the mean over all image points
@@ -107,10 +106,7 @@ void binary_image(uint8_t* image) {
 
 	//binning using mean intensity of image
 	for (uint16_t i = 0; i < IMAGE_BUFFER_SIZE; i++) {
-		if (image[i] < mean)
-			image[i] = 0;
-		else
-			image[i] = 1;
+		(image[i] < mean) ? (image[i] = 0) : (image[i] = 1);
 	}
 
 	//corrects vignetting effects
@@ -118,15 +114,15 @@ void binary_image(uint8_t* image) {
 }
 
 /**
-* @brief   			corrects vignetting effects
-*
-* @param[in] image		array containing one line of the captured image in binary form
-*/
+ * @brief   			corrects vignetting effects
+ *
+ * @param[in] image		array containing one line of the captured image in binary form
+ */
 void binary_correction(uint8_t* image) {
 
 	/* goes from the left border towards the middle and checks if the next 5 consecutive points are 1.
-	* if they aren't, it puts the current point to 1 and corrects the vignetting effect.
-	*/
+	 * if they aren't, it puts the current point to 1 and corrects the vignetting effect.
+	 */
 	uint16_t j = 0;
 	while (!image[j + 1] || !image[j + 2] || !image[j + 3] || !image[j + 4]
 			|| !image[j + 5]) {
@@ -134,7 +130,7 @@ void binary_correction(uint8_t* image) {
 		j++;
 	}
 
-	/* goes from the right border towards the middle and checks i the next 5 consecutive points are 1.
+	/* goes from the right border towards the middle and checks if the next 5 consecutive points are 1.
 	 * if they aren't, it puts the current point to 1 and corrects the vignetting effect.
 	 */
 	j = 639;
@@ -150,10 +146,7 @@ void binary_correction(uint8_t* image) {
 			if (image[i - 1] && image[i + 1])
 				image[i] = 1;
 			if (image[i - 1] && !image[i + 1]) {
-				if (image[i + 2])
-					image[i] = 1;
-				else
-					image[i] = 0;
+				image[i + 2] ? (image[i] = 1) : (image[i] = 0);
 			}
 		}
 	}
@@ -163,21 +156,18 @@ void binary_correction(uint8_t* image) {
 			if (image[i + 1] && image[i - 1])
 				image[i] = 1;
 			if (image[i + 1] && !image[i - 1]) {
-				if (image[i - 2])
-					image[i] = 1;
-				else
-					image[i] = 0;
+				image[i - 2] ? (image[i] = 1) : (image[i] = 0);
 			}
 		}
 	}
 }
 
 /**
-* @brief   			converts the image into a binary image
-*
-* @param[in] image		array containing one line of the captured image
-* @return    b			decimal number of the barcode
-*/
+ * @brief   			converts the image into a binary image
+ *
+ * @param[in] image		array containing one line of the captured image
+ * @return    b			decimal number of the barcode
+ */
 uint8_t edge_detection(uint8_t *image) {
 
 	//detects the edges of the barcode

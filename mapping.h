@@ -16,18 +16,18 @@ extern "C" {
 
 #include "motor_control.h"
 
+typedef enum {
+	NORTH = 0, EAST, SOUTH, WEST,
+} galileo;
+
 struct map {
 	uint16_t TOF_dis;
 	int IR_r_pro;
 	int IR_l_pro;
-	uint8_t dir_old;
-	uint8_t dir;
-	uint8_t conquest;
+	galileo dir_old;
+	galileo dir;
+	bool conquest;
 };
-
-typedef enum {
-	NORTH = 0, EAST, SOUTH, WEST,
-} galileo;
 
 void mapping_start(void);
 uint8_t map_draw_f_wall(uint8_t, uint8_t);

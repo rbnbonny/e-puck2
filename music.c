@@ -34,12 +34,11 @@ static THD_FUNCTION(Music, arg) {
 	chRegSetThreadName(__FUNCTION__);
 
 	static uint8_t confirm = 0;
+	static uint8_t last_code = 0;
+	uint8_t barcode_num = 0;
 
 	dac_start();
 	playMelodyStart();
-
-	uint8_t barcode_num;
-	static uint8_t last_code = 0;
 
 	while (1) {
 		barcode_num = get_barcode_number();
